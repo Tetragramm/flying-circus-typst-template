@@ -6,7 +6,7 @@
 #show: FlyingCircus.with(
   Title: title,
   Author: author,
-  CoverImg: read("images/cover.png", encoding: none),
+  CoverImg: read("images/Cover.png", encoding: none),
   Dedication: [It's Alive!!! MUAHAHAHA!],
 )
 
