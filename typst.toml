@@ -1,5 +1,5 @@
 [package]
-name = "FlyingCircus"
+name = "flyingcircus"
 version = "3.0.0"
 compiler = "0.11.0"
 entrypoint = "src/FlyingCircus.typ"

@@ -1,4 +1,4 @@
-#import "@preview/FlyingCircus:3.0.0" : *
+#import "@preview/flyingcircus:3.0.0" : *
 
 #let title = "Sample Flying Circus Book"
 #let author = "Tetragramm"
