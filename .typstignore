@@ -11,3 +11,4 @@
 scripts
 tests
 Justfile
+*.pdf
