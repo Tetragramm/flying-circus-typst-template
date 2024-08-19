@@ -6,14 +6,14 @@
 #show: FlyingCircus.with(
   Title: title,
   Author: author,
-  CoverImg: read("images/Cover.png", encoding: none),
+  CoverImg: read("../../template/images/Cover.png", encoding: none),
   Dedication: [It's Alive!!! MUAHAHAHA!],
 )
 
 #FCPlane(
-  read("Basic Biplane_stats.json"),
+  read("../../template/Basic Biplane_stats.json"),
   Nickname: "Bring home the bacon!",
-  Img: read("images/Bergziegel_image.png", encoding: none),
+  Img: read("../../template/images/Bergziegel_image.png", encoding: none),
 )[
 This text is where the description of the plane goes. Formatting is pretty simple, but bold and italic don't work yet, I
 need to fake those.
@@ -49,7 +49,7 @@ Find the full documentation for Typst on the website #link("https://typst.app/do
 #set heading(offset: 1)
 
 //Parameters
-#FCVehicleSimple(read("Sample Vehicle_stats.json"))[#lorem(120)]
+#FCVehicleSimple(read("../../template/Sample Vehicle_stats.json"))[#lorem(120)]
 
 //We wrap this in a text box so that we can set a special rule to apply
 #text[
@@ -58,7 +58,7 @@ Find the full documentation for Typst on the website #link("https://typst.app/do
   //
   #FCWeapon(
     (Name: "Rifle/Carbine", Cells: (Hits: 1, Damage: 2, AP: 1, Range: "Extreme"), Price: "Scrip", Tags: "Manual"),
-    Img: read("images/Rifle.png", encoding: none),
+    Img: read("../../template/images/Rifle.png", encoding: none),
   )[
     Note that you can set the text in the cell boxes to whatever you want.
   ]
@@ -75,8 +75,8 @@ Find the full documentation for Typst on the website #link("https://typst.app/do
 
 
 #FCVehicleFancy(
-  read("Sample Vehicle_stats.json"),
-  Img: read("images/Wandelburg.png", encoding: none),
+  read("../../template/Sample Vehicle_stats.json"),
+  Img: read("../../template/images/Wandelburg.png", encoding: none),
   TextVOffset: 6.2in,
   BoxText: ("Role": "Fast Bomber", "First Flight": "1601", "Strengths": "Fastest Bomber"),
   BoxAnchor: "north-east",
@@ -98,7 +98,7 @@ Find the full documentation for Typst on the website #link("https://typst.app/do
   communications.
 ][#lorem(100)]
 
-#FCVehicleFancy(read("Sample Vehicle_stats.json"))[][#lorem(100)]
+#FCVehicleFancy(read("../../template/Sample Vehicle_stats.json"))[][#lorem(100)]
 
 #let ship_stats = (
   Name: "Macchi Frigate",
@@ -118,7 +118,7 @@ Find the full documentation for Typst on the website #link("https://typst.app/do
 
 #set heading(offset: 0)
 #FCShip(
-  Img: read("images/Macchi Frigate.png", encoding: none),
+  Img: read("../../template/images/Macchi Frigate.png", encoding: none),
   Ship: ship_stats,
 )[
   Though remembered for large bombardment ships and airship tenders, the majority of the Seeheer was in fact these

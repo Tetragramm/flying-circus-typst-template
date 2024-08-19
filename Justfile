@@ -8,12 +8,13 @@ default:
 
 # generate manual
 doc:
+	just install-preview
 	typst compile template/Main.typ template/Main.pdf --font-path fonts/
 
 # run test suite
 test *args:
 	just install-preview
-	typst-test run {{ args }}
+	typst-test run {{ args }} --font-path fonts/
 
 # update test cases
 update *args:
