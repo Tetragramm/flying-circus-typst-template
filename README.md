@@ -6,9 +6,12 @@ Do you want your homebrew to have the same fancy style as the Flying Circus book
 ## Acknowledgments and Useful Links
 
 Based on the style and work (with the permission of) Erika Chappell for the [Flying Circus RPG](https://opensketch.itch.io/flying-circus).
+
 Integrates with the [Plane Builder](https://tetragramm.github.io/PlaneBuilder/index.html). Just click the Catalog JSON button at the bottom to save what you need for this template.
+
 Same with the [Vehicle Builder](https://tetragramm.github.io/VehicleBuilder/).
-Or check out the [discord server](https://discord.gg/HKdyUuvmcb).
+
+Or check out the [Discord server](https://discord.gg/HKdyUuvmcb).
 
 ## Getting Started
 
