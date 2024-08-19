@@ -12,6 +12,7 @@ doc:
 
 # run test suite
 test *args:
+	just install-preview
 	typst-test run {{ args }}
 
 # update test cases
