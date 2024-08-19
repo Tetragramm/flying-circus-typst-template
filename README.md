@@ -1,64 +1,199 @@
-# The `my-package` Package
-<div align="center">Version 0.1.0</div>
+# The `FlyingCircus` Package
+<div align="center">Version 3.0.0</div>
 
-A short description about the project and/or client.
+Do you want your homebrew to have the same fancy style as the Flying Circus book? Do you want a simple command to generate a whole aircraft stat page, vehicle, or even ship?  I'll bet you do! Take a look at the Flying Circus Aircraft Catalog Template. 
 
-## Template adaptation checklist
+## Acknowledgments and Useful Links
 
-- [ ] Fill out `README.md`
-  - Change the `my-package` package name, including code snippets
-  - Check section contents and/or delete sections that don't apply
-- [ ] Check and/or replace `LICENSE` by something that suits your needs
-- [ ] Fill out `typst.toml`
-  - See also the [typst/packages README](https://github.com/typst/packages/?tab=readme-ov-file#package-format)
-- [ ] Adapt Repository URLs in `CHANGELOG.md`
-  - Consider only committing that file with your first release, or removing the "Initial Release" part in the beginning
-- [ ] Adapt or deactivate the release workflow in `.github/workflows/release.yml`
-  - to deactivate it, delete that file or remove/comment out lines 2-4 (`on:` and following)
-  - to use the workflow
-    - [ ] check the values under `env:`, particularly `REGISTRY_REPO`
-    - [ ] if you don't have one, [create a fine-grained personal access token](https://github.com/settings/tokens?type=beta) with [only Contents permission](https://stackoverflow.com/a/75116350/371191) for the `REGISTRY_REPO`
-    - [ ] on this repo, create a secret `REGISTRY_TOKEN` (at `https://github.com/[user]/[repo]/settings/secrets/actions`) that contains the so created token
-
-    if configured correctly, whenever you create a tag `v...`, your package will be pushed onto a branch on the `REGISTRY_REPO`, from which you can then create a pull request against [typst/packages](https://github.com/typst/packages/)
-- [ ] remove/replace the example test case
-- [ ] (add your actual code, docs and tests)
-- [ ] remove this section from the README
+Based on the style and work (with the permission of) Erika Chappell for the [Flying Circus RPG](https://opensketch.itch.io/flying-circus).
+Integrates with the [Plane Builder](https://tetragramm.github.io/PlaneBuilder/index.html). Just click the Catalog JSON button at the bottom to save what you need for this template.
+Same with the [Vehicle Builder](https://tetragramm.github.io/VehicleBuilder/).
+Or check out the [discord server](https://discord.gg/HKdyUuvmcb).
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on the typst web app. Perhaps a short code example on importing the package and a very simple teaser usage.
+These instructions will get you a copy of the project up and running on the typst web app. 
 
 ```typ
-#import "@preview/my-package:0.1.0": *
+#import "@preview/FlyingCircus:3.0.0": *
 
-#show: my-show-rule.with()
-#my-func()
-```
+#show: FlyingCircus.with(
+  Title: title,
+  Author: author,
+  CoverImg: read("images/cover.png", encoding: none),
+  Dedication: [It's Alive!!! MUAHAHAHA!],
+)
 
-### Installation
-
-A step by step guide that will tell you how to get the development environment up and running. This should example how to clone the repo and where to (maybe a link to the typst documentation on it), along with any pre-requisite software and installation steps.
-
-```
-$ First step
-$ Another step
-$ Final step
+#FCPlane(read("My Plane_stats.json"), Nickname:"My First Plane")
 ```
 
 ## Usage
 
-A more in-depth description of usage. Any template arguments? A complicated example that showcases most if not all of the functions the package provides? This is also an excellent place to signpost the manual.
+The first thing is the FlyingCircus style.
 
 ```typ
-#import "@preview/my-package:0.1.0": *
+#import "@preview/FlyingCircus:3.0.0": *
 
-#let my-complicated-example = ...
+/// Defines the FlyingCircus template
+///
+/// - Title (str): Title of the document. Goes in metadata and on title page.
+/// - Author (str): Author(s) of the document. Goes in metadata and on title page.
+/// - CoverImg (bytes): Image to make the first page of the document.
+/// - Description (str): Text to go with the title on the title page.
+/// - Dedication (str): Dedication to go down below the title on the title page.
+/// - body (content)
+/// -> content
+
+// Example
+#show: FlyingCircus.with(
+  Title: title,
+  Author: author,
+  CoverImg: read("images/cover.png", encoding: none),
+  Dedication: [It's Alive!!! MUAHAHAHA!],
+)
 ```
 
-## Additional Documentation and Acknowledgments
+Next is the FCPlane function for making plane pages.
+```type
+/// Defines the FlyingCircus Plane page.  Always on a new page. Image optional.
+///
+/// - Plane (str | dictionary): JSON string or dictionary representing the plane stats.
+/// - Nickname (str): Nickname to go under the aircraft name.
+/// - Img (bytes | none): Image to go at the top of the page. Set to none to remove.
+/// - BoxText (dictionary): Pairs of values to go in the box over the image. Does nothing if no Img provided.
+/// - BoxAnchor (str): Which anchor of the image to put the box in?  Sample values are "north", "south-west", "center".
+/// - DescriptiveText (content)
+/// -> content
 
-* Project folder on server:
-* Confluence link:
-* Asana board:
-* etc...
+
+// Example
+#FCPlane(
+  read("Basic Biplane_stats.json"),
+  Nickname: "Bring home the bacon!",
+  Img: read("images/Bergziegel_image.png", encoding: none),
+  BoxText: ("Role": "Fast Bomber", "First Flight": "1601", "Strengths": "Fastest Bomber"),
+  BoxAnchor: "north-east",
+)[
+#lorem(100)
+]
+```
+
+The FCVehicleSimple is for when you want to put multiple vehicles on a page.
+```typ
+/// Defines the FlyingCircus Simple Vehicle.  Not always a full page. Image optional.
+///
+/// - Vehicle (str | dictionary): JSON string or dictionary representing the Vehicle stats.
+/// - Img (bytes): Image to go above the vehicle. (optional)
+/// - DescriptiveText (content)
+/// -> content
+#FCVehicleSimple(read("Sample Vehicle_stats.json"))[#lorem(120)]
+```
+
+FCVehicleFancy is a one or two page vehicle that looks nicer but takes up more space.
+```typ
+/// Defines the FlyingCircus Vehicle page.  Always on a new page. Image optional.
+/// If the Img is provided, it will take up two facing pages, otherwise only one, but a full page, unlike the Simple.
+///
+/// - Vehicle (str | dictionary): JSON string or dictionary representing the Vehicle stats.
+/// - Img (bytes | none): Image to go at the top of the first page. Set to none to remove.
+/// - TextVOffset (length): How far to push the text down the page. Want to do that inset text thing the book does? You can, the text can overlap with thte image.  Does nothing if no Img provided.
+/// - BoxText (dictionary): Pairs of values to go in the box over the image. Does nothing if no Img provided.
+/// - BoxAnchor (str): Which anchor of the image to put the box in?  Sample values are "north", "south-west", "center".
+/// - FirstPageContent (content): Goes on the first page. If no image is provided, it is not present.
+/// - AfterContent (content): Goes after the stat block. Always present.
+/// -> content
+
+// Example 
+#FCVehicleFancy(
+  read("Sample Vehicle_stats.json"),
+  Img: read("images/Wandelburg.png", encoding: none),
+  TextVOffset: 6.2in,
+  BoxText: ("Role": "Fast Bomber", "First Flight": "1601", "Strengths": "Fastest Bomber"),
+  BoxAnchor: "north-east",
+)[
+#lorem(100)
+][
+#lorem(100)
+]
+```
+
+Last of the vehicles, FCShip is for boats like Into the Drink.
+```typ
+/// Defines the FlyingCircus Ship page.  Always on a new page. Image optional.
+///
+/// - Ship (str | dictionary): JSON string or dictionary representing the Ship stats.
+/// - Img (bytes | none): Image to go at the top of the page. Set to none to remove.
+/// - DescriptiveText (content): Goes below the name and above the stats table.
+/// - notes (content): Goes in the notes section.
+/// -> content
+
+// Example: No builder for Ships, so you'll have to put it in your own JSON, or just a dict, like this.
+#let ship_stats = (
+  Name: "Macchi Frigate",
+  Speed: 5,
+  Handling: 15,
+  Hardness: 9,
+  Soak: 0,
+  Strengths: "-",
+  Weaknesses: "-",
+  Weapons: (
+    (Name: "x2 Light Howitzer", Fore: "x1", Left: "x2", Right: "x2", Rear: "x1"),
+    (Name: "x6 Pom-Pom Gun", Fore: "x2", Left: "x3", Right: "x3", Rear: "x2", Up: "x6"),
+    (Name: "x2 WMG", Left: "x1", Right: "x1"),
+  ),
+  DamageStates: ("", "-1 Speed", "-3 Guns", "-1 Speed", "-3 Guns", "Sinking"),
+)
+
+#FCShip(
+  Img: read("images/Macchi Frigate.png", encoding: none),
+  Ship: ship_stats,
+)[
+  #lorem(100)
+][
+  #lorem(5)
+]
+```
+
+Additional functions include FCWeapon
+```typ
+/// Defines the FlyingCircus Weapon card. Image optional.
+///
+/// - Weapon (str | dictionary): JSON string or dictionary representing the Weapon stats.
+/// - Img (bytes | none): Image to go above the card. Set to none to remove.
+/// - DescriptiveText (content): Goes below the name and above the stats table.
+/// -> content
+
+//Example 
+#FCWeapon(
+  (Name: "Rifle/Carbine", Cells: (Hits: 1, Damage: 2, AP: 1, Range: "Extreme"), Price: "Scrip", Tags: "Manual"),
+  Img: read("images/Rifle.png", encoding: none),
+)[
+Note that you can set the text in the cell boxes to whatever you want.
+]
+```
+
+KochFont:
+```typ
+/// Sets the tex to the Koch Fette FC font for people who don't want to remember the font name.
+///
+/// - body (content)
+/// - ..args: Any valid argument to the text function
+/// -> content
+
+// Example 
+#KochFont(size: 18pt)[Vehicles]
+```
+
+and HiddenHeading, which is for adding to the table of contents without actually putting words on the page.
+```typ
+//If we don't want all our planes at the top level of the table of contents.  EX: if we want
+// - Intro
+// - Story
+// - Planes 
+//   - First Plane
+// We break the page, and create a HiddenHeading, that doesn't show up in the document (Or a normal heading, if that's what you need)
+//Then we set the heading offset to one so everything after that is indented one level in the table of contents.
+#pagebreak()
+#HiddenHeading[= Vehicles]
+#set heading(offset: 1)
+```
