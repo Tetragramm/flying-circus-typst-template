@@ -3,7 +3,9 @@
 #let title = "Sample Flying Circus Book"
 #let author = "Tetragramm"
 
-#show: FlyingCircus.with(Title: title, Author: author, CoverImg: image("images/Cover.png"), Dedication: [It's Alive!!! MUAHAHAHA!])
+#show: FlyingCircus.with(Title: title, Author: author, CoverImg: image("images/Cover.png"), Dedication: [Look strange? You probably don't have the fonts installed.
+
+Download the fonts from #link("https://github.com/Tetragramm/flying-circus-typst-template/archive/refs/heads/Fonts.zip")[HERE].  Install them on your computer, upload them to the Typst web-app (anywhere in the project is fine) or use the Typst command line option --font-path to include them.])
 
 #FCPlane(
   read("Basic Biplane_stats.json"),

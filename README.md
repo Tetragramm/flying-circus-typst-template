@@ -5,6 +5,8 @@ Do you want your homebrew to have the same fancy style as the Flying Circus book
 
 ## Acknowledgments and Useful Links
 
+Download the fonts from [HERE](https://github.com/Tetragramm/flying-circus-typst-template/archive/refs/heads/Fonts.zip).  Install them on your computer, upload them to the Typst web-app (anywhere in the project is fine) or use the Typst command line option --font-path to include them.
+
 Based on the style and work (with the permission of) Erika Chappell for the [Flying Circus RPG](https://opensketch.itch.io/flying-circus).
 
 Integrates with the [Plane Builder](https://tetragramm.github.io/PlaneBuilder/index.html). Just click the Catalog JSON button at the bottom to save what you need for this template.
