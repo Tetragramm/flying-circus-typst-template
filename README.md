@@ -23,7 +23,7 @@ These instructions will get you a copy of the project up and running on the typs
 #show: FlyingCircus.with(
   Title: title,
   Author: author,
-  CoverImg: read("images/cover.png", encoding: none),
+  CoverImg: image("images/cover.png"),
   Dedication: [It's Alive!!! MUAHAHAHA!],
 )
 
@@ -41,7 +41,7 @@ The first thing is the FlyingCircus style.
 ///
 /// - Title (str): Title of the document. Goes in metadata and on title page.
 /// - Author (str): Author(s) of the document. Goes in metadata and on title page.
-/// - CoverImg (bytes): Image to make the first page of the document.
+/// - CoverImg (image): Image to make the first page of the document.
 /// - Description (str): Text to go with the title on the title page.
 /// - Dedication (str): Dedication to go down below the title on the title page.
 /// - body (content)
@@ -51,18 +51,18 @@ The first thing is the FlyingCircus style.
 #show: FlyingCircus.with(
   Title: title,
   Author: author,
-  CoverImg: read("images/cover.png", encoding: none),
+  CoverImg: image("images/cover.png"),
   Dedication: [It's Alive!!! MUAHAHAHA!],
 )
 ```
 
 Next is the FCPlane function for making plane pages.
-```type
+```typ
 /// Defines the FlyingCircus Plane page.  Always on a new page. Image optional.
 ///
 /// - Plane (str | dictionary): JSON string or dictionary representing the plane stats.
 /// - Nickname (str): Nickname to go under the aircraft name.
-/// - Img (bytes | none): Image to go at the top of the page. Set to none to remove.
+/// - Img (image | none): Image to go at the top of the page. Set to none to remove.
 /// - BoxText (dictionary): Pairs of values to go in the box over the image. Does nothing if no Img provided.
 /// - BoxAnchor (str): Which anchor of the image to put the box in?  Sample values are "north", "south-west", "center".
 /// - DescriptiveText (content)
@@ -73,7 +73,7 @@ Next is the FCPlane function for making plane pages.
 #FCPlane(
   read("Basic Biplane_stats.json"),
   Nickname: "Bring home the bacon!",
-  Img: read("images/Bergziegel_image.png", encoding: none),
+  Img: image("images/Bergziegel_image.png"),
   BoxText: ("Role": "Fast Bomber", "First Flight": "1601", "Strengths": "Fastest Bomber"),
   BoxAnchor: "north-east",
 )[
@@ -86,7 +86,7 @@ The FCVehicleSimple is for when you want to put multiple vehicles on a page.
 /// Defines the FlyingCircus Simple Vehicle.  Not always a full page. Image optional.
 ///
 /// - Vehicle (str | dictionary): JSON string or dictionary representing the Vehicle stats.
-/// - Img (bytes): Image to go above the vehicle. (optional)
+/// - Img (image): Image to go above the vehicle. (optional)
 /// - DescriptiveText (content)
 /// -> content
 #FCVehicleSimple(read("Sample Vehicle_stats.json"))[#lorem(120)]
@@ -98,7 +98,7 @@ FCVehicleFancy is a one or two page vehicle that looks nicer but takes up more s
 /// If the Img is provided, it will take up two facing pages, otherwise only one, but a full page, unlike the Simple.
 ///
 /// - Vehicle (str | dictionary): JSON string or dictionary representing the Vehicle stats.
-/// - Img (bytes | none): Image to go at the top of the first page. Set to none to remove.
+/// - Img (image | none): Image to go at the top of the first page. Set to none to remove.
 /// - TextVOffset (length): How far to push the text down the page. Want to do that inset text thing the book does? You can, the text can overlap with thte image.  Does nothing if no Img provided.
 /// - BoxText (dictionary): Pairs of values to go in the box over the image. Does nothing if no Img provided.
 /// - BoxAnchor (str): Which anchor of the image to put the box in?  Sample values are "north", "south-west", "center".
@@ -109,7 +109,7 @@ FCVehicleFancy is a one or two page vehicle that looks nicer but takes up more s
 // Example 
 #FCVehicleFancy(
   read("Sample Vehicle_stats.json"),
-  Img: read("images/Wandelburg.png", encoding: none),
+  Img: image("images/Wandelburg.png"),
   TextVOffset: 6.2in,
   BoxText: ("Role": "Fast Bomber", "First Flight": "1601", "Strengths": "Fastest Bomber"),
   BoxAnchor: "north-east",
@@ -125,7 +125,7 @@ Last of the vehicles, FCShip is for boats like Into the Drink.
 /// Defines the FlyingCircus Ship page.  Always on a new page. Image optional.
 ///
 /// - Ship (str | dictionary): JSON string or dictionary representing the Ship stats.
-/// - Img (bytes | none): Image to go at the top of the page. Set to none to remove.
+/// - Img (image | none): Image to go at the top of the page. Set to none to remove.
 /// - DescriptiveText (content): Goes below the name and above the stats table.
 /// - notes (content): Goes in the notes section.
 /// -> content
@@ -148,7 +148,7 @@ Last of the vehicles, FCShip is for boats like Into the Drink.
 )
 
 #FCShip(
-  Img: read("images/Macchi Frigate.png", encoding: none),
+  Img: image("images/Macchi Frigate.png"),
   Ship: ship_stats,
 )[
   #lorem(100)
@@ -162,14 +162,14 @@ Additional functions include FCWeapon
 /// Defines the FlyingCircus Weapon card. Image optional.
 ///
 /// - Weapon (str | dictionary): JSON string or dictionary representing the Weapon stats.
-/// - Img (bytes | none): Image to go above the card. Set to none to remove.
+/// - Img (image | none): Image to go above the card. Set to none to remove.
 /// - DescriptiveText (content): Goes below the name and above the stats table.
 /// -> content
 
 //Example 
 #FCWeapon(
   (Name: "Rifle/Carbine", Cells: (Hits: 1, Damage: 2, AP: 1, Range: "Extreme"), Price: "Scrip", Tags: "Manual"),
-  Img: read("images/Rifle.png", encoding: none),
+  Img: image("images/Rifle.png"),
 )[
 Note that you can set the text in the cell boxes to whatever you want.
 ]

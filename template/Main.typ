@@ -3,17 +3,12 @@
 #let title = "Sample Flying Circus Book"
 #let author = "Tetragramm"
 
-#show: FlyingCircus.with(
-  Title: title,
-  Author: author,
-  CoverImg: read("images/Cover.png", encoding: none),
-  Dedication: [It's Alive!!! MUAHAHAHA!],
-)
+#show: FlyingCircus.with(Title: title, Author: author, CoverImg: image("images/Cover.png"), Dedication: [It's Alive!!! MUAHAHAHA!])
 
 #FCPlane(
   read("Basic Biplane_stats.json"),
   Nickname: "Bring home the bacon!",
-  Img: read("images/Bergziegel_image.png", encoding: none),
+  Img: image("images/Bergziegel_image.png"),
 )[
 This text is where the description of the plane goes. Formatting is pretty simple, but bold and italic don't work yet, I
 need to fake those.
@@ -31,8 +26,8 @@ Leave an empty line or it will be the same paragraph
  
 Break the column where you want it with `#colbreak()`
 
-Images can be added by doing `#image(path, width:blah, blah)`. The FC functions do fancy stuff though, so they need you
-to do `read(path,encoding:none)`
+Images can be added by doing `#image(path)`. The FC functions do fancy stuff though, and may override some arguments
+when you pass an image into them using an argument.
 
 Find the full documentation for Typst on the website #link("https://typst.app/docs")[#text(fill: blue)[HERE]]
 ]
@@ -58,7 +53,7 @@ Find the full documentation for Typst on the website #link("https://typst.app/do
   //
   #FCWeapon(
     (Name: "Rifle/Carbine", Cells: (Hits: 1, Damage: 2, AP: 1, Range: "Extreme"), Price: "Scrip", Tags: "Manual"),
-    Img: read("images/Rifle.png", encoding: none),
+    Img: image("images/Rifle.png"),
   )[
     Note that you can set the text in the cell boxes to whatever you want.
   ]
@@ -76,7 +71,7 @@ Find the full documentation for Typst on the website #link("https://typst.app/do
 
 #FCVehicleFancy(
   read("Sample Vehicle_stats.json"),
-  Img: read("images/Wandelburg.png", encoding: none),
+  Img: image("images/Wandelburg.png"),
   TextVOffset: 6.2in,
   BoxText: ("Role": "Fast Bomber", "First Flight": "1601", "Strengths": "Fastest Bomber"),
   BoxAnchor: "north-east",
@@ -118,7 +113,7 @@ Find the full documentation for Typst on the website #link("https://typst.app/do
 
 #set heading(offset: 0)
 #FCShip(
-  Img: read("images/Macchi Frigate.png", encoding: none),
+  Img: image("images/Macchi Frigate.png"),
   Ship: ship_stats,
 )[
   Though remembered for large bombardment ships and airship tenders, the majority of the Seeheer was in fact these
@@ -127,4 +122,4 @@ Find the full documentation for Typst on the website #link("https://typst.app/do
   their anti- aircraft guns were also effective against surface targets.
 ][
   160 crew
-]
+] 
