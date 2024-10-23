@@ -1,5 +1,5 @@
 # The `flyingcircus` Package
-<div align="center">Version 3.0.0</div>
+<div align="center">Version 3.2.0</div>
 
 Do you want your homebrew to have the same fancy style as the Flying Circus book? Do you want a simple command to generate a whole aircraft stat page, vehicle, or even ship?  I'll bet you do! Take a look at the Flying Circus Aircraft Catalog Template. 
 
@@ -20,7 +20,7 @@ Or check out the [Discord server](https://discord.gg/HKdyUuvmcb).
 These instructions will get you a copy of the project up and running on the typst web app. 
 
 ```typ
-#import "@preview/flyingcircus:3.0.0": *
+#import "@preview/flyingcircus:3.2.0": *
 
 #show: FlyingCircus.with(
   Title: title,
@@ -201,4 +201,93 @@ and HiddenHeading, which is for adding to the table of contents without actually
 #pagebreak()
 #HiddenHeading[= Vehicles]
 #set heading(offset: 1)
+
+
+New in Version 3.2.0, the FCPlaybook (+utilities), FCNPCShort, and FCAirshipShort
+
+//This creates pages like the playbook. Largely customizable, for say, chariots of steel versions.
+// - Name (str) The name of the Playbook
+// - Subhead (str) The text that goes with the name in the header
+// - Character (content) This is the entire left column
+// - Questions (content) This is the top section of the right column, for motivation and trust questions.
+// - Starting (content) Middle section of the right column. Starting Assets, Burdens, Planes, Vices, ect
+// - Stats (content) Bottom section of the right column. Just the four FCPStatTable calls (and a colbreak, probably)
+// - StatNames () Define the stats to draw circles for on the top part of the 2nd page
+// - Triggers (content) List of triggers, includes section, because not all playbooks use the same text there.
+// - Vents (content) List of Vents, customizable like Triggers
+// - Intimacy (content) Bottom section of the left column, for the intimacy move
+// - Moves (content) The entire right column of the second page
+//
+// Utilities for use with FCPlaybook
+// - FCPRule()  The full-column horizontal line
+// - FCPSection(name: str)[content] The section break
+//    - name (str) The fancy font name on the lft side of the section line, can be blank.
+//    - content The italicized text on the right side of the line, can be blank.
+// - FCPStatTable(name, tagline, stats) For creating Stat tables
+//    - name (str) The name of the profile, to be rendered in smallcaps
+//    - tagline (str) The tagline of the profile, italicized
+//    - stats (dict) A dictionary of stats ex (Hard:"+2") Keys are first row, values are second row, no restrictions otherwise.
+#FCPlaybook(
+  Name: str,
+  Subhead: str,
+  Character: content,
+  Questions: content,
+  Starting: content,
+  Stats: content,
+  StatNames: (),
+  Triggers: content,
+  Vents: content,
+  Intimacy: content,
+  Moves: content,
+)
+
+// This creates a short NPC profile like that in the back of the aircraft catalogue
+// - plane (dict) Contains the keys 
+//      - Name
+//      - Nickname
+//      - Price (optional)
+//      - Upkeep (optional)
+//      - Used (optional)
+//      - Speeds
+//      - Handling
+//      - Structure
+// - img (image) Image to draw
+// - img_scale (number) What scale to draw the image, relative to the column size
+// - img_shift_dx (percent) How far to shift the image in the x direction
+// - img_shift_dy (percent) How far to shift the image in the y direction
+// - content The decriptive text to go above the stat block
+#FCShortNPC(
+  plane, 
+  img: none, 
+  img_scale: 1.5, 
+  img_shift_dx: -10%, 
+  img_shift_dy: -10%, 
+  content
+)
+
+
+// This creates a short airship profile like that in the back of the aircraft catalogue
+// - airship (dict) Contains the keys 
+//      - Name
+//      - Nickname
+//      - Price (optional)
+//      - Upkeep (optional)
+//      - Used (optional)
+//      - Speed
+//      - Lift
+//      - Handling
+//      - Toughness
+// - img (image) Image to draw
+// - img_scale (number) What scale to draw the image, relative to the column size
+// - img_shift_dx (percent) How far to shift the image in the x direction
+// - img_shift_dy (percent) How far to shift the image in the y direction
+// - content The decriptive text to go above the stat block
+#FCShortAirship(
+  airship, 
+  img: none, 
+  img_scale: 1.5, 
+  img_shift_dx: -10%, 
+  img_shift_dy: -10%, 
+  content
+)
 ```
