@@ -1,5 +1,6 @@
-#import "@preview/flyingcircus:3.2.0" : *
-#import "@preview/cetz:0.3.1"
+#import "@local/flyingcircus:3.2.0" : *
+// #import "../src/FlyingCircus.typ"
+#import "@preview/cetz:0.3.2"
 
 #let title = "Sample Flying Circus Book"
 #let author = "Tetragramm"
@@ -9,16 +10,18 @@
   Author: author,
   CoverImg: image("images/Cover.png"),
   Dedication: [Look strange? You probably don't have the fonts installed.
-     
+
     Download the fonts from #link("https://github.com/Tetragramm/flying-circus-typst-template/archive/refs/heads/Fonts.zip")[HERE].
     Install them on your computer, upload them to the Typst web-app (anywhere in the project is fine) or use the Typst
     command line option --font-path to include them.],
 )
 
 #FCPlane(
-  read("Basic Biplane_stats.json"),
+  json("./Basic Biplane_stats.json"),
   Nickname: "Bring home the bacon!",
   Img: image("images/Bergziegel_image.jpg"),
+  BoxText: ("Role": "Fast Bomber", "First Flight": "1601", "Strengths": "Fastest Bomber"),
+  BoxAnchor: "north-west",
 )[
 _This text is where the description of the plane goes. Formatting is pretty simple. This is italic._
  
@@ -53,7 +56,7 @@ Find the full documentation for Typst on the website #link("https://typst.app/do
 #set heading(offset: 1)
 
 //Parameters
-#FCVehicleSimple(read("Sample Vehicle_stats.json"))[#lorem(120)]
+#FCVehicleSimple(json("Sample Vehicle_stats.json"))[#lorem(120)]
 
 //We wrap this in a text box so that we can set a special rule to apply
 #text[
@@ -66,7 +69,7 @@ Find the full documentation for Typst on the website #link("https://typst.app/do
   )[
     Note that you can set the text in the cell boxes to whatever you want.
   ]
-   
+
   #FCWeapon((
     Name: "Machine-Gun (MG)",
     Cells: (Hits: 4, Damage: 2, AP: 1, "Ammo Count": 10),
@@ -79,7 +82,7 @@ Find the full documentation for Typst on the website #link("https://typst.app/do
 
 
 #FCVehicleFancy(
-  read("Sample Vehicle_stats.json"),
+  json("Sample Vehicle_stats.json"),
   Img: image("images/Wandelburg.jpg"),
   TextVOffset: 6.2in,
   BoxText: ("Role": "Fast Bomber", "First Flight": "1601", "Strengths": "Fastest Bomber"),
@@ -88,21 +91,21 @@ Find the full documentation for Typst on the website #link("https://typst.app/do
   The project to build the first armoured attack vehicle in the Gotha Empire spanned nearly three decades. Largely
   considered a low priority during the war with the UWF, the fierce fighting against the Macchi Republics suddenly
   accelerated the project, which went from concept sketch to deployment in six short months.
-   
+
   This development was accompanied by intense secrecy: the project was code-named “Wandering Castle”, which gave the
   impression it was a Leviathan-building enterprise.
-   
+
   Used for the first time in the Battle of Reggiane in 1593, the Type 1 reflects the idea that the tank ought to be a sort
   of mobile form of the concrete pillboxes coming into use at the time. Though suffering frequent breakdowns, plagued with
   difficulties getting its main gun on target, and very vulnerable in the mountains, it was successful enough that it soon
   became the most-produced tank of the war.
-   
+
   After the first six months the official name of the vehicle was changed from its codename to “Self-Propelled Assault
   Vehicle Type 1”, known by the acronym “SbRd-AnZg Ausf I”. This development was ignored by everyone outside of official
   communications.
 ][#lorem(100)]
 
-#FCVehicleFancy(read("Sample Vehicle_stats.json"))[][#lorem(100)]
+#FCVehicleFancy(json("Sample Vehicle_stats.json"))[][#lorem(100)]
 
 #let ship_stats = (
   Name: "Macchi Frigate",
@@ -153,11 +156,11 @@ Find the full documentation for Typst on the website #link("https://typst.app/do
     ]
     #FCPSection("Name")[Choose, or write your own]
     _Anthony, Dietrich, Gunter, Hans, Hermann, Jan, Klaus, Werner, Willy_
-     
+
     _Bertha, Emma, Gertrud, Hilda, Ilse, Ingrid, Karla, Mercédès_
-     
+
     #h(1fr)_Moser, Scheffler, Hamann, Muller, Schmidt, Weber, Becker, Bauer_
-     
+
     Age Range: _Youth (16-22), Adult (23-30)_
     #FCPSection("Current Residence", "Choose, or write your own")
     _Choose a town from another playbook, though it is far behind you now._
@@ -172,20 +175,18 @@ Find the full documentation for Typst on the website #link("https://typst.app/do
     //These let you choose where to stretch the page.  The empty space gets put into these in proportion to the number.  2fr is twice as big as 1fr
     #v(1fr)
     #FCPSection("Character History")[Choose all that apply]
-     
-    #v(1fr)
+
     I was taught to fly by...
     #columns(2, gutter: 0pt)[
-      - ...an expensive training course. 
+      - ...an expensive training course.
       - ...an instructor when I was conscripted.
       #colbreak()
-      - ...a family member, passing it on. 
-      - ...nobody, I'm just winging it. 
+      - ...a family member, passing it on.
+      - ...nobody, I'm just winging it.
     ]
-     
-    #v(1fr)
+
     I left my home because...
-     
+
     #columns(3, gutter: 0pt)[
       - ...jobs dried up.
       - ...I got hurt and fired.
@@ -196,10 +197,9 @@ Find the full documentation for Typst on the website #link("https://typst.app/do
       - ...they learned I was queer.
       - ...I broke the law.
     ]
-     
-    #v(1fr)
+
     I fly so I can make some money and so I can...
-     
+
     #columns(2, gutter: 0pt)[
       - ...make sure my kids have it better.
       - ...do something with my life.
@@ -232,18 +232,18 @@ Find the full documentation for Typst on the website #link("https://typst.app/do
     #set list(marker: [○])
     #set columns(gutter: 0pt)
     #KochFont(size: 18pt)[Start With...]
-    #FCPSection("Assets")[Choose 3] 
+    #FCPSection("Assets")[Choose 3]
     #columns(2)[
-      - A plane large enough to carry your family. 
-      - A simple, robust sidearm. 
+      - A plane large enough to carry your family.
+      - A simple, robust sidearm.
       - A membership in a large union.
       #colbreak()
-      - Two co-workers with special skills. 
-      - A house somewhere relatively safe. 
+      - Two co-workers with special skills.
+      - A house somewhere relatively safe.
       - A set of solid boots.
     ]
-     
-    #FCPSection("Dependents")[Choose 2] 
+
+    #FCPSection("Dependents")[Choose 2]
     #columns(2)[
       - A spouse without meaningful income.
       - A parent, now old and infirm.
@@ -253,8 +253,8 @@ Find the full documentation for Typst on the website #link("https://typst.app/do
       - A close friend, disabled.
       - An apprentice, learning your trade.
     ]
-     
-    #FCPSection("Planes")[Choose 1, or a plane worth up to 15þ] 
+
+    #FCPSection("Planes")[Choose 1, or a plane worth up to 15þ]
     #columns(2)[
       - Theler KanonenKobra MB (Used)
       - König-Werke Adler-N (Used)
@@ -262,8 +262,8 @@ Find the full documentation for Typst on the website #link("https://typst.app/do
       - Kreuzer Skorpion (Used)
       - Markgraf Volksfestung A (Used)
     ]
-     
-    #FCPSection("Familiar Vices")[Choose 3] 
+
+    #FCPSection("Familiar Vices")[Choose 3]
     #columns(4)[
       - Drinking
       - Opiates
@@ -281,17 +281,17 @@ Find the full documentation for Typst on the website #link("https://typst.app/do
   //This does in fact do magic, literally and figuratively, so you can use whatever stat names your playbook has, like witches do.  One of these shows Wild, as an example.
   Stats: [
     #FCPStatTable("Jobber", "Let's get paid and go home.", (Hard: "+1", Keen: "+1", Calm: "+1", Daring: "+1"))
-     
+
     #FCPStatTable(
       "New Lease on Life",
       "Beats going back to the mines!",
       (Hard: "+2", Keen: "-1", Calm: "-1", Daring: "+2", Wild: "-"),
     )
-     
+
     #colbreak()
-     
+
     #FCPStatTable("Worn Down", "Just punching the clock.", (Hard: "+2", Keen: "+2", Calm: "+2", Daring: "-4"))
-     
+
     #FCPStatTable("Safety Inspector", "No point taking extra risks.", (Hard: "-2", Keen: "+2", Calm: "+4", Daring: "-2"))
   ],
   //This is defining them so the circles show up right.  It does not check to make sure they're the same as the StatTables.
@@ -328,7 +328,7 @@ Find the full documentation for Typst on the website #link("https://typst.app/do
     #FCPSection("Intimacy Move")[Start with this Move]
     *Share the Burden*: _When you are intimate with comrades_, the Stress of all the characters participating can be freely
     redistributed between them. If there are any NPC participants, 1 Stress is also removed from each PC.
-     
+
     _If you use this move in the air_, 1 additional Stress is removed from each character.
   ],
   //This is the whole right column.  Useful thing is the use of place and stack at the bottom to make the Mastery Progress tracker.
@@ -338,10 +338,10 @@ Find the full documentation for Typst on the website #link("https://typst.app/do
     - Breadwinner: Instead of personal upkeep, you have two Dependents. Write their names, and mark 1 on one and 2 on the
       other. Each Routine, during Expenses, choose to pay 0, 1, or 2 Thaler for each Dependent. If you pay 0, erase one mark.
       If you pay 2, mark their track and describe what special thing you do for them to make their lives easier.
-       
+
       A Dependent at 2 Marks removes 1 Stress per routine. A Dependent losing a Mark gives 1 Stress, and at 0 Marks they cause
       2 Stress per routine.
-     
+
     #stack(
       dir: ltr,
       spacing: 0.5em,
@@ -374,7 +374,7 @@ Find the full documentation for Typst on the website #link("https://typst.app/do
     #FCPRule()
     #FCPSection("Other Moves & Notes")[Start with 1 Mastery Move and 3þ]
     All your XP costs are doubled.
-     
+
     #place(bottom + right)[
       #stack(
         dir: ltr,
@@ -437,3 +437,4 @@ Find the full documentation for Typst on the website #link("https://typst.app/do
   AirDestroyer,
 )[The most common form of Air Destroyer in the war, forming the basis of the Gotha Empire's zeppelin fleet. A warlord
   repairing a downed Jörmungandr can threaten an entire region.]
+

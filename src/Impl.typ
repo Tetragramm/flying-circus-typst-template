@@ -1,5 +1,5 @@
-#import "@preview/cetz:0.3.1"
-#import "@preview/cetz-plot:0.1.0"
+#import "@preview/cetz:0.3.2"
+#import "@preview/cetz-plot:0.1.1"
 #import "@preview/cuti:0.2.1": regex-fakebold
 
 /// Sets the tex to the Koch Fette FC font for people who don't want to remember that.
@@ -43,23 +43,23 @@
   set list(indent: 1em)
   set enum(indent: 1em)
   set page(numbering: "1")
-   
+
   //Create fake italics because fonts don't have it.
   show emph: it => {
     regex-fakeitalic(it.body)
   }
-   
+
   show strong: it => {
     regex-fakebold(it.body)
   }
-   
+
   show smallcaps: it => {
     fakesc(it.body)
   }
-   
+
   //Replace Synchronization Marker
   show regex("✣"): text(font: "Material Symbols Sharp", [#str.from-unicode(61800)])
-   
+
   //Create default page format
   set page(
     paper: "a4",
@@ -71,17 +71,18 @@
         line((-.5, 0), (.5, 0))
         circle((-.5, 0), radius: 1.5mm, fill: black)
         circle((.5, 0), radius: 1.5mm, fill: black)
+        set-style(stroke: (paint: black, thickness: 0.75mm))
         if (calc.rem(counter(page).get().first(), 2) == 1) {
-          for x in range(-490, 480, step: 13){
-            line((x / 1000, -2mm), ((x + 20) / 1000, 2mm))
+          for x in range(-490, 480, step: 10){
+            line((x / 1000, -1.5mm), ((x + 15) / 1000, 1.5mm))
           }
         } else {
-          for x in range(-470, 500, step: 13){
-            line((x / 1000, -2mm), ((x - 20) / 1000, 2mm))
+          for x in range(-470, 500, step: 10){
+            line((x / 1000, -1.5mm), ((x - 15) / 1000, 1.5mm))
           }
-        } 
-        content((0, 1pt), KochFont(stroke: 5pt + white)[Flying Circus])
-        content((0, 1pt), KochFont(stroke: 0.5pt + black)[Flying Circus])
+        }
+        content((0, 0pt), KochFont(size: 18pt, stroke: 5pt + white)[Flying Circus])
+        content((0, 0pt), KochFont(size: 18pt, stroke: 0.0pt + black)[Flying Circus])
       }))
     },
     //Footer is alternating directions with page number at outside and only partial bar
@@ -91,7 +92,7 @@
         set-style(stroke: (paint: black, thickness: 0.75mm))
         if (calc.rem(counter(page).get().first(), 2) == 1) {
           content((-.5, 0), KochFont(size: 18pt)[#counter(page).get().first()])
-           
+
           line((-.45, 0), (.5, 0))
           circle((-.45, 0), radius: 1.5mm, fill: black)
           circle((.5, 0), radius: 1.5mm, fill: black)
@@ -100,7 +101,7 @@
           }
         } else {
           content((.5, 0), KochFont(size: 18pt)[#counter(page).get().first()])
-           
+
           line((-.5, 0), (.45, 0))
           circle((-.5, 0), radius: 1.5mm, fill: black)
           circle((.45, 0), radius: 1.5mm, fill: black)
@@ -113,8 +114,8 @@
     //Margins, duh.
     margin: (top: 0.5in, bottom: 0.75in, left: 0.75in, right: 0.75in),
   )
-   
-   
+
+
   //Place CoverImage, if it exists
   if (CoverImg != none) {
     page(paper: "a4", header: none, footer: none, margin: 0pt)[
@@ -160,20 +161,20 @@
       Flying\
       #box(rotate(90deg)[#scale(x: -100%)[$ theta.alt $]]) Circus #box(rotate(-90deg)[$ theta.alt $])
     ]
-     
+
     //Title and description
     #text(size: 24pt)[
-      #Desciption \ 
+      #Desciption \
       #Title
     ]
-     
+
     //Fancy swirls
     #text(
       size: 75pt,
     )[
-      #box(rotate(-90deg, reflow: true)[#scale(y: 300%, reflow: true)[$ sigma.alt $]]) #box(rotate(-90deg, reflow: true)[#scale(y: -300%, reflow: true)[$ sigma.alt $]]) 
+      #box(rotate(-90deg, reflow: true)[#scale(y: 300%, reflow: true)[$ sigma.alt $]]) #box(rotate(-90deg, reflow: true)[#scale(y: -300%, reflow: true)[$ sigma.alt $]])
     ]
-     
+
     #v(1fr)
     //Dedication is optional
     #Dedication
@@ -192,7 +193,7 @@
     v(10pt, weak: true)
     text(size: 20pt, it)
   }
-   
+
   onepage[#align(
       center,
       box(
@@ -200,7 +201,7 @@
         outline(depth: 10, indent: 1em, title: KochFont(size: 50pt, fill: white, stroke: black + 1pt)[Contents #h(1fr)]),
       ),
     )]
-   
+
   //Set up headings (gotta be styled after #outline)
   show heading: it => {
     KochFont[#align(left)[#it.body]]
@@ -216,10 +217,10 @@
   show heading.where(level: 3): it => {
     KochFont(size: 18pt)[#align(left)[#it.body]]
   }
-   
+
   //Reset Page counter to 1, and let's go!
   counter(page).update(1)
-   
+
   body
 }
 
@@ -232,25 +233,20 @@
 
 /// Defines the FlyingCircus Plane page.  Always on a new page. Image optional.
 ///
-/// - Plane (str | dictionary): JSON string or dictionary representing the plane stats.
+/// - Plane (dictionary): dictionary representing the plane stats.
 /// - Nickname (str): Nickname to go under the aircraft name.
 /// - Img (bytes | none): Image to go at the top of the page. Set to none to remove.
 /// - BoxText (dictionary): Pairs of values to go in the box over the image. Does nothing if no Img provided.
 /// - BoxAnchor (str): Which anchor of the image to put the box in?  Sample values are "north", "south-west", "center".
 /// - DescriptiveText (content)
 /// -> content
-#let FCPlane(Plane, Nickname: str, Img: defaultImg, BoxText: none, BoxAnchor: "north", DescriptiveText) = {
+#let FCPlane(plane, Nickname: str, Img: defaultImg, BoxText: none, BoxAnchor: "north", DescriptiveText) = {
   pagebreak(weak: true)
-  let plane = Plane
-  //Read in json.decode file if it's a path
-  if (type(Plane) == str) {
-    plane = json.decode(Plane)
-  }
   //Define image element
   let plane_image = if (Img != none) {
     context cetz.canvas(length: 100%, {
       import cetz.draw:*
-      content((0.5, 1), anchor: "north", MaybeImage(Img, width: page.width * 0.95, fit: "stretch"), name: "image") 
+      content((0.5, 1), anchor: "north", MaybeImage(Img, width: page.width * 0.95, fit: "stretch"), name: "image")
       if (BoxText != none) {
         content("image." + BoxAnchor, anchor: BoxAnchor, padding: 5mm, align(center)[
           #let cells = ()
@@ -270,12 +266,12 @@
     let hN = plane.keys().contains("Price")
     let hU = plane.keys().contains("Used")
     text(size: 20pt)[#plane.Name];h(1fr); if (hN) { [#plane.Price;þ New] }; if (hN and hU) { [, ] }; if (hU) { [#plane.Used;þ Used] }
-     
+
     line(length: 100%, stroke: luma(100))
-     
+
     [_\"#Nickname\"_ #h(1fr); #plane.Upkeep;þ]
   }
-   
+
   //Read through the stat rows and push them into cells
   let cells = ()
   for row in plane.Stats {
@@ -316,23 +312,24 @@
     [#plane.Survivability],
     table.cell(align: left + horizon, [#plane.Armament]),
   )
-   
+
   place(top + left, box(width: 0pt, height: 0pt, hide[= #plane.Name]))
   grid(
     columns: 1,
     rows: (auto, 1fr, auto),
-    grid.cell(
-      align: center,
-      [
-        #plane_image
-        #plane_title
-        #v(-1em)
-        #context stack(dir: ltr, spacing: 1%, box(width:59%, height:measure(statTable).height, statTable), box(width: 40%,
-        height: measure(statTable).height, vitalTable))
-        #v(-1em)
-        #miscTable
-      ],
-    ),
+    grid.cell(align: center, [
+      #plane_image
+      #plane_title
+      #v(-1em)
+      #context stack(
+        dir: ltr,
+        spacing: 1%,
+        box(width: 59%, height: measure(statTable).height, statTable),
+        box(width: 40%, height: measure(statTable).height, vitalTable),
+      )
+      #v(-1em)
+      #miscTable
+    ]),
     grid.cell(columns(2)[#DescriptiveText], inset: (y: 0.5em)),
     grid.cell(align(center)[#text(size: 24pt)[#underline[#link(plane.Link)[Plane Builder Link]]]]),
   )
@@ -340,22 +337,18 @@
 
 /// Defines the FlyingCircus Simple Vehicle.  Not always a full page. Image optional.
 ///
-/// - Vehicle (str | dictionary): JSON string or dictionary representing the Vehicle stats.
+/// - Vehicle (dictionary): dictionary representing the Vehicle stats.
 /// - Img (bytes): Image to go above the vehicle.
 /// - DescriptiveText (content)
 /// -> content
-#let FCVehicleSimple(Vehicle, Img: none, DescriptiveText) = {
-  //Read in the Vehicle JSON file
-  let vehicle = Vehicle;
-  if (type(Vehicle) == str) {
-    vehicle = json.decode(Vehicle)
-  }
+#let FCVehicleSimple(vehicle, Img: none, DescriptiveText) = {
   //Define title element
-  let veh_title = par(leading: -1em)[
+  let veh_title = [
+    #set par(leading: -1em)
     #set text(fill: luma(100))
     #set block(spacing: 0.1em)
     #link(vehicle.Link)[#text(size: 20pt)[#vehicle.Name]]; #h(1fr); #vehicle.Price;þ, #vehicle.Upkeep;þ Upkeep
-     
+
     #line(length: 100%, stroke: luma(100))
   ]
   //Define image element
@@ -390,7 +383,7 @@
   ]
   let cells = ()
   for row in vehicle.Crew {
-    for (idx, (k, v),) in row.pairs().enumerate() {
+    for (idx, (k, v)) in row.pairs().enumerate() {
       if (idx == 0) {
         if (v.contains("Loader")) {
           cells.push(table.cell(stroke: none)[])
@@ -414,7 +407,7 @@
     [Notes],
     ..cells,
   )
-   
+
   place(top + left, box(width: 0pt, height: 0pt, hide[= #vehicle.Name]))
   if (Img != none) {
     veh_image
@@ -432,7 +425,7 @@
 /// Defines the FlyingCircus Plane page.  Always on a new page. Image optional.
 /// If the Img is provided, it will take up two facing pages, otherwise only one, but a full page, unlike the Simple.
 ///
-/// - Vehicle (str | dictionary): JSON string or dictionary representing the Vehicle stats.
+/// - Vehicle (dictionary): dictionary representing the Vehicle stats.
 /// - Img (bytes | none): Image to go at the top of the first page. Set to none to remove.
 /// - TextVOffset (length): How far to push the text down the page. Want to do that inset text thing the book does? You can, the text can overlap with thte image.  Does nothing if no Img provided.
 /// - BoxText (dictionary): Pairs of values to go in the box over the image. Does nothing if no Img provided.
@@ -440,32 +433,28 @@
 /// - FirstPageContent (content): Goes on the first page. If no image is provided, it is not present.
 /// - AfterContent (content): Goes after the stat block. Always present.
 /// -> content
-#let FCVehicleFancy(Vehicle, Img: none, TextVOffset: 0pt, BoxText: none, BoxAnchor: "north", FirstPageContent, AfterContent) = {
-  //Read in the Vehicle JSON file
-  let vehicle;
-  if (type(Vehicle) == str) {
-    vehicle = json.decode(Vehicle)
-  }
+#let FCVehicleFancy(vehicle, Img: none, TextVOffset: 0pt, BoxText: none, BoxAnchor: "north", FirstPageContent, AfterContent) = {
   //Define image element is done below because it needs context.
-   
   //Define Firsttitle element
-  let veh_title = par(leading: -1em)[
+  let veh_title = [
+    #set par(leading: -1em)
     #set text(fill: luma(100), size: 24pt)
     #set block(spacing: 0.1em)
     #link(vehicle.Link)[#vehicle.Name]
-     
+
     #line(length: 100%, stroke: luma(100))
   ]
   //Define title element
-  let veh_title2 = align(center)[#box(width: 70%)[#par(leading: -1em)[
-        #set text(fill: luma(100))
-        #set block(spacing: 0.1em)
-        #link(vehicle.Link)[#text(size: 20pt)[#vehicle.Name]]; #h(1fr); #vehicle.Price;þ
-         
-        #line(length: 100%, stroke: luma(100))
-         
-        #vehicle.Nickname;#h(1fr)Upkeep #vehicle.Upkeep;þ
-      ]]]
+  let veh_title2 = align(center)[#box(width: 70%)[
+      #set par(leading: -1em)
+      #set text(fill: luma(100))
+      #set block(spacing: 0.1em)
+      #link(vehicle.Link)[#text(size: 20pt)[#vehicle.Name]]; #h(1fr); #vehicle.Price;þ
+
+      #line(length: 100%, stroke: luma(100))
+
+      #vehicle.Nickname;#h(1fr)Upkeep #vehicle.Upkeep;þ
+    ]]
   //Define the stat table element
   let veh_stats = align(center)[#box(width: 70%)[
       #table(
@@ -495,7 +484,7 @@
     ]]
   let cells = ()
   for row in vehicle.Crew {
-    for (idx, (k, v),) in row.pairs().enumerate() {
+    for (idx, (k, v)) in row.pairs().enumerate() {
       if (idx == 0) {
         if (v.contains("Loader")) {
           cells.push(table.cell(stroke: none)[])
@@ -526,24 +515,32 @@
       background: align(
         top,
       )[
-        #context cetz.canvas( length: 100%, { import cetz.draw:*
-        content((0.5, 1), anchor: "north", MaybeImage(Img, width: page.width, fit: "stretch"), name: "image"); if (BoxText !=
-        none) { content("image." + BoxAnchor, anchor: BoxAnchor, padding: 1in, align(center)[
-        #let cells = ()
-        #for (k, v) in BoxText {
-          cells.push(text(size: 12pt, [#k: #v]))
-        }
-        #table(
-          align: left,
-          columns: 1,
-          fill: white.transparentize(50%),
-          stroke: none,
-          table.hline(),
-          table.vline(x: 0),
-          table.vline(x: 1),
-          ..cells,
-          table.hline(),
-        ), ]) } }, )
+        #context cetz.canvas(
+          length: 100%,
+          {
+            import cetz.draw:*
+            content((0.5, 1), anchor: "north", MaybeImage(Img, width: page.width, fit: "stretch"), name: "image"); if (BoxText != none) {
+              content("image." + BoxAnchor, anchor: BoxAnchor, padding: 1in, align(center)[
+                #let cells = ()
+                #for (k, v) in BoxText {
+                  cells.push(text(size: 12pt, [#k: #v]))
+                }
+                #table(
+                  align: left,
+                  columns: 1,
+                  fill: white.transparentize(50%),
+                  stroke: none,
+                  inset: (y: 0.25em),
+                  table.hline(),
+                  table.vline(x: 0),
+                  table.vline(x: 1),
+                  ..cells,
+                  table.hline(),
+                ),
+              ])
+            }
+          },
+        )
       ],
       margin: (top: 0pt),
       header: none,
@@ -569,7 +566,7 @@
 
 /// Defines the FlyingCircus Ship page.  Always on a new page. Image optional.
 ///
-/// - Ship (str | dictionary): JSON string or dictionary representing the Ship stats.
+/// - Ship (dictionary): dictionary representing the Ship stats.
 /// - Img (bytes | none): Image to go at the top of the page. Set to none to remove.
 /// - DescriptiveText (content): Goes below the name and above the stats table.
 /// - notes (content): Goes in the notes section.
@@ -582,7 +579,7 @@
   ]
   //Define title element
   let ship_title = KochFont(size: 24pt)[#Ship.Name]
-   
+
   //Construct the stats table element
   let statTable = table(
     columns: (30%, 30%, 30%),
@@ -640,7 +637,7 @@
     // vlinex(x: 1),
     table.vline(x: 2, stroke: none),
   )
-   
+
   let cells = ()
   for weap in Ship.Weapons {
     cells.push([#weap.Name])
@@ -658,7 +655,7 @@
     [Up],
     ..cells,
   )
-   
+
   place(top + left, box(width: 0pt, height: 0pt, hide[= #Ship.Name]))
   grid(columns: 1, rows: (auto, 1fr, auto), grid.cell([
     #ship_image
@@ -677,16 +674,11 @@
 
 /// Defines the FlyingCircus Weapon card. Image optional.
 ///
-/// - Weapon (str | dictionary): JSON string or dictionary representing the Weapon stats.
+/// - Weapon (dictionary): dictionary representing the Weapon stats.
 /// - Img (bytes | none): Image to go above the card. Set to none to remove.
 /// - DescriptiveText (content): Goes below the name and above the stats table.
 /// -> content
-#let FCWeapon(Weapon, Img: none, DescriptiveText)={
-  let weapon = Weapon
-  //Read in json.decode file if it's a path
-  if (type(Weapon) == str) {
-    weapon = json.decode(Weapon)
-  }
+#let FCWeapon(weapon, Img: none, DescriptiveText)={
   place(top + left, box(width: 0pt, height: 0pt, hide[== #weapon.Name]))
   MaybeImage(Img)
   {
@@ -697,17 +689,17 @@
   }
   DescriptiveText
   v(-1em)
-   
+
   let cells = ()
-  for (k, v) in Weapon.Cells {
+  for (k, v) in weapon.Cells {
     cells.push(table.cell(fill: black)[#text(fill: white)[#k]])
     cells.push([#v])
   }
   table(
-    columns: (1fr,) * (2 * Weapon.Cells.len()),
+    columns: (1fr,) * (2 * weapon.Cells.len()),
     align: center + horizon,
     ..cells,
-    table.cell(align: left, colspan: (2 * Weapon.Cells.len()))[#Weapon.Tags],
+    table.cell(align: left, colspan: (2 * weapon.Cells.len()))[#weapon.Tags],
   )
 }
 
@@ -735,11 +727,11 @@
 #let FCPRule() = {
   context if (here().position().x.inches() < 5.5) {
     block(spacing: 0.4em)[
-      #line(start: (-0.24in, 0pt), length: 100% + 0.4in)
+      #line(start: (-0.19in, 0pt), length: 100% + 0.35in)
     ]
   } else {
     block(spacing: 0.4em)[
-      #line(start: (-0.16in, 0pt), length: 100% + 0.4in)
+      #line(start: (-0.16in, 0pt), length: 100% + 0.26in)
     ]
   }
 }
@@ -747,7 +739,7 @@
 #let FCPStatTable(name, tagline, stats) = {
   set par(spacing: 0.6em)
   block(stroke: (bottom: 0.5pt), inset: (bottom: 0.75pt))[#smallcaps[#name]]
-  emph[#tagline] 
+  emph[#tagline]
   let cells = (table.hline(stroke: 2pt), table.vline(stroke: 2pt),)
   let cells2 = ()
   for (k, v) in stats {
@@ -785,28 +777,28 @@
         import cetz.draw:*
         set-style(stroke: (paint: black, thickness: 0.75mm))
         line((0, 0), (1, 0.7071), stroke: white)
-        let topl = (0.5in, 8in)
-        let topm = ac(topl, (5.35in, 0mm))
-        let topr = ac(topl, (10.7in, 0mm))
+        let topl = (0.3in, 7.9in)
+        let topm = ac(topl, (5.6in, 0mm))
+        let topr = ac(topl, (11.1in, 0mm))
         circle(topl, radius: 1.5mm, fill: black)
         circle(topr, radius: 1.5mm, fill: black)
         line(topl, topr)
         line(ac(topl, (0mm, 1.5mm)), ac(topr, (0mm, 1.5mm)), stroke: 0.5mm)
         line(ac(topl, (0mm, -1.5mm)), ac(topr, (0mm, -1.5mm)), stroke: 0.5mm)
         line(topm, ac(topm, (0mm, -7.58in)))
-         
+
         set-style(stroke: (paint: black, thickness: 0.25mm))
         line(ac(topl, (0.3mm, 0mm)), ac(topl, (0.3mm, -8in)))
         line(ac(topl, (-0.3mm, 0mm)), ac(topl, (-0.3mm, -8in)))
         line(ac(topr, (0.3mm, 0mm)), ac(topr, (0.3mm, -8in)))
         line(ac(topr, (-0.3mm, 0mm)), ac(topr, (-0.3mm, -8in)))
-         
+
         if (pb_counter.get().at(0) == 0) {
           rect(ac(topl, (0.3mm, -1.5mm)), ac(topm, (0mm, -2cm)), fill: black)
         }
-         
-        content(topm, KochFont(stroke: 8pt + white)[Flying Circus])
-        content(topm, KochFont(stroke: 0.25pt + black)[Flying Circus])
+
+        content(topm, KochFont(size: 18pt, stroke: 8pt + white)[Flying Circus])
+        content(topm, KochFont(size: 18pt, stroke: 0.0pt + black)[Flying Circus])
       })
     },
     //Footer is alternating directions with page number at outside and only partial bar
@@ -819,23 +811,23 @@
         for x in range(-470, 500, step: 10){
           line((x / 1000, -2mm), ((x - 20) / 1000, 2mm))
         }
-         
+
         set-style(stroke: (paint: black, thickness: 0.25mm))
         line((-.5, 0.5mm), (.5, 0.5mm))
         line((-.5, -0.5mm), (.5, -0.5mm))
         content((0, 0), KochFont(size: 20pt, stroke: 10pt + white)[#Name])
-        content((0, 0), KochFont(size: 20pt, stroke: 0.5pt + black)[#Name])
+        content((0, 0), KochFont(size: 20pt, stroke: 0.0pt + black)[#Name])
       }))
     },
     //Margins, duh.
-    margin: (top: 0.5in, bottom: 0.75in, left: 0.75in, right: 0.75in),
+    margin: (top: 0.5in, bottom: 0.75in, left: 0.5in, right: 0.4in),
   )
-   
+
   set text(size: 11pt)
   set par(justify: false)
   set par(spacing: 0.8em)
-  set list(indent: 0pt, marker: [•], spacing: 0.4em)
-   
+  set list(indent: 0pt, marker: [•], spacing: 0.6em)
+
   let barwidth = 100% + 0.3in - 0.3mm
   columns(2, gutter: 0.3in)[
     #v(-.16in)
@@ -861,15 +853,15 @@
     #v(1fr)
     #align(center)[
       _Choose, and add +1 to a stat._
-      #columns(2, gutter: 0.5in)[ 
+      #columns(2, gutter: 0.5in)[
         #Stats
       ]
     ]
   ]
   pb_counter.step()
   pagebreak()
-  columns(2, gutter: 0.5in)[
-    #box(width: 35%)[
+  columns(2, gutter: 0.3in)[
+    #box(width: 45%)[
       #FCPSection("")[]
       #KochFont(size: 14pt)[Name]
       #columns(2, gutter: 0.1in)[
@@ -879,7 +871,7 @@
         #FCPSection("")[]
         #KochFont(size: 14pt)[Pronouns]
       ]
-    ]#h(5%)#box(width: 60%)[
+    ]#h(5%)#box(width: 50%)[
       #cetz.canvas(length: (100% / (StatNames.len() + 1)), {
         import cetz.draw:*
         set-style(stroke: (paint: black, thickness: 0.5mm), content: (padding: 0.1))
@@ -913,7 +905,7 @@
       #colbreak()
       #Vents
     ]
-     
+
     #FCPRule()
     #grid(
       columns: (auto, auto),
@@ -929,7 +921,7 @@
       grid.cell(inset: (bottom: 1em, left: 1em))[#FCPSection("Familiar Vices")[]
       ],
     )
-     
+
     #FCPRule()
     #Intimacy
     #colbreak()
@@ -948,12 +940,12 @@
     let hU = plane.keys().contains("Used")
     let hUp = plane.keys().contains("Upkeep")
     text(size: 20pt)[#plane.Name];h(1fr); if (hN) { [#plane.Price;þ New] }; if (hN and hU) { [, ] }; if (hU) { [#plane.Used;þ Used] }
-     
+
     line(length: 100%, stroke: luma(100))
-     
+
     [_\"#plane.Nickname\"_ #h(1fr); #if (hUp) { [#plane.Upkeep;þ Upkeep] }]
   }
-   
+
   plane_title
   grid(columns: (1fr, 3fr), grid.cell(
     align: right,
@@ -986,12 +978,12 @@
     let hU = airship.keys().contains("Used")
     let hUp = airship.keys().contains("Upkeep")
     text(size: 20pt)[#airship.Name];h(1fr); if (hN) { [#airship.Price;þ New] }; if (hN and hU) { [, ] }; if (hU) { [#airship.Used;þ Used] }
-     
+
     line(length: 100%, stroke: luma(100))
-     
+
     [_\"#airship.Nickname\"_ #h(1fr); #if (hUp) { [#airship.Upkeep;þ Upkeep] }]
   }
-   
+
   title
   grid(columns: (1fr, 3fr), grid.cell(
     align: right,
