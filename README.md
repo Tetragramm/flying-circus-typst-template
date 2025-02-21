@@ -1,5 +1,5 @@
 # The `flyingcircus` Package
-<div align="center">Version 3.2.0</div>
+<div align="center">Version 3.2.1</div>
 
 Do you want your homebrew to have the same fancy style as the Flying Circus book? Do you want a simple command to generate a whole aircraft stat page, vehicle, or even ship?  I'll bet you do! Take a look at the Flying Circus Aircraft Catalog Template. 
 
@@ -20,7 +20,7 @@ Or check out the [Discord server](https://discord.gg/HKdyUuvmcb).
 These instructions will get you a copy of the project up and running on the typst web app. 
 
 ```typ
-#import "@preview/flyingcircus:3.2.0": *
+#import "@preview/flyingcircus:3.2.1": *
 
 #show: FlyingCircus.with(
   Title: title,
@@ -29,7 +29,7 @@ These instructions will get you a copy of the project up and running on the typs
   Dedication: [It's Alive!!! MUAHAHAHA!],
 )
 
-#FCPlane(read("My Plane_stats.json"), Nickname:"My First Plane")
+#FCPlane(json("My Plane_stats.json"), Nickname:"My First Plane")
 ```
 
 ## Usage
@@ -62,7 +62,7 @@ Next is the FCPlane function for making plane pages.
 ```typ
 /// Defines the FlyingCircus Plane page.  Always on a new page. Image optional.
 ///
-/// - Plane (str | dictionary): JSON string or dictionary representing the plane stats.
+/// - Plane (dictionary): dictionary representing the plane stats.
 /// - Nickname (str): Nickname to go under the aircraft name.
 /// - Img (image | none): Image to go at the top of the page. Set to none to remove.
 /// - BoxText (dictionary): Pairs of values to go in the box over the image. Does nothing if no Img provided.
@@ -73,7 +73,7 @@ Next is the FCPlane function for making plane pages.
 
 // Example
 #FCPlane(
-  read("Basic Biplane_stats.json"),
+  json("Basic Biplane_stats.json"),
   Nickname: "Bring home the bacon!",
   Img: image("images/Bergziegel_image.png"),
   BoxText: ("Role": "Fast Bomber", "First Flight": "1601", "Strengths": "Fastest Bomber"),
@@ -87,11 +87,11 @@ The FCVehicleSimple is for when you want to put multiple vehicles on a page.
 ```typ
 /// Defines the FlyingCircus Simple Vehicle.  Not always a full page. Image optional.
 ///
-/// - Vehicle (str | dictionary): JSON string or dictionary representing the Vehicle stats.
+/// - Vehicle (dictionary): dictionary representing the Vehicle stats.
 /// - Img (image): Image to go above the vehicle. (optional)
 /// - DescriptiveText (content)
 /// -> content
-#FCVehicleSimple(read("Sample Vehicle_stats.json"))[#lorem(120)]
+#FCVehicleSimple(json("Sample Vehicle_stats.json"))[#lorem(120)]
 ```
 
 FCVehicleFancy is a one or two page vehicle that looks nicer but takes up more space.
@@ -99,7 +99,7 @@ FCVehicleFancy is a one or two page vehicle that looks nicer but takes up more s
 /// Defines the FlyingCircus Vehicle page.  Always on a new page. Image optional.
 /// If the Img is provided, it will take up two facing pages, otherwise only one, but a full page, unlike the Simple.
 ///
-/// - Vehicle (str | dictionary): JSON string or dictionary representing the Vehicle stats.
+/// - Vehicle (dictionary): dictionary representing the Vehicle stats.
 /// - Img (image | none): Image to go at the top of the first page. Set to none to remove.
 /// - TextVOffset (length): How far to push the text down the page. Want to do that inset text thing the book does? You can, the text can overlap with thte image.  Does nothing if no Img provided.
 /// - BoxText (dictionary): Pairs of values to go in the box over the image. Does nothing if no Img provided.
@@ -110,7 +110,7 @@ FCVehicleFancy is a one or two page vehicle that looks nicer but takes up more s
 
 // Example 
 #FCVehicleFancy(
-  read("Sample Vehicle_stats.json"),
+  json("Sample Vehicle_stats.json"),
   Img: image("images/Wandelburg.png"),
   TextVOffset: 6.2in,
   BoxText: ("Role": "Fast Bomber", "First Flight": "1601", "Strengths": "Fastest Bomber"),
@@ -126,7 +126,7 @@ Last of the vehicles, FCShip is for boats like Into the Drink.
 ```typ
 /// Defines the FlyingCircus Ship page.  Always on a new page. Image optional.
 ///
-/// - Ship (str | dictionary): JSON string or dictionary representing the Ship stats.
+/// - Ship (dictionary): dictionary representing the Ship stats.
 /// - Img (image | none): Image to go at the top of the page. Set to none to remove.
 /// - DescriptiveText (content): Goes below the name and above the stats table.
 /// - notes (content): Goes in the notes section.
@@ -163,7 +163,7 @@ Additional functions include FCWeapon
 ```typ
 /// Defines the FlyingCircus Weapon card. Image optional.
 ///
-/// - Weapon (str | dictionary): JSON string or dictionary representing the Weapon stats.
+/// - Weapon (dictionary): dictionary representing the Weapon stats.
 /// - Img (image | none): Image to go above the card. Set to none to remove.
 /// - DescriptiveText (content): Goes below the name and above the stats table.
 /// -> content
