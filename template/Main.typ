@@ -1,4 +1,4 @@
-#import "@local/flyingcircus:3.2.1" : *
+#import "@preview/flyingcircus:3.2.1" : *
 #import "@preview/cetz:0.3.2"
 
 #let title = "Sample Flying Circus Book"
