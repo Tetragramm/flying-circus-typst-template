@@ -1,7 +1,7 @@
 [package]
 name = "flyingcircus"
-version = "3.2.1"
-compiler = "0.13.0"
+version = "3.3.0"
+compiler = "0.13.1"
 entrypoint = "src/FlyingCircus.typ"
 repository = "https://github.com/Tetragramm/flying-circus-typst-template"
 authors = ["Tetragramm"]
