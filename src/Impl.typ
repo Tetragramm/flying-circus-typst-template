@@ -1,5 +1,5 @@
-#import "@preview/cetz:0.3.2"
-#import "@preview/cetz-plot:0.1.1"
+#import "@preview/cetz:0.4.0"
+#import "@preview/cetz-plot:0.1.2"
 #import "@preview/cuti:0.2.1": regex-fakebold
 
 /// Sets the tex to the Koch Fette FC font for people who don't want to remember that.
@@ -30,9 +30,18 @@
 /// - CoverImg (bytes): Image to make the first page of the document.
 /// - Description (str): Text to go with the title on the title page.
 /// - Dedication (str): Dedication to go down below the title on the title page.
+/// - body-only (bool): Whether to skip the cover, title, and contents pages.
 /// - body (content)
 /// -> content
-#let FlyingCircus(Title: str, Author: str, CoverImg: none, Desciption: "Aircraft Catalogue", Dedication: "", body) = {
+#let FlyingCircus(
+  Title: str,
+  Author: str,
+  CoverImg: none,
+  Desciption: "Aircraft Catalogue",
+  Dedication: "",
+  body-only: false,
+  body,
+) = {
   //Set PDF Metadata
   set document(title: Title, author: Author)
   //Set Default Font document settings
@@ -57,151 +66,188 @@
     fakesc(it.body)
   }
 
-  //Replace Synchronization Marker
-  show regex("✣"): text(font: "Material Symbols Sharp", [#str.from-unicode(61800)])
-
+  let is-missing() = {
+    measure(text(font: "Wingdings", fallback: false, [Ë])).width == 0pt
+  }
+  show regex("✣"): {
+    context if (is-missing()) {
+      text(font: "Material Symbols Sharp", [#str.from-unicode(61800)])
+    } else {
+      text(font: "Wingdings", fallback: false, [Ë])
+    }
+  }
   //Create default page format
   set page(
     paper: "a4",
     //Header is alternating directions and the centered "Flying Circus" with border
-    header: context{
-      align(center, cetz.canvas(length: 100%, {
-        import cetz.draw:*
-        set-style(stroke: (paint: black, thickness: 0.75mm))
-        line((-.5, 0), (.5, 0))
-        circle((-.5, 0), radius: 1.5mm, fill: black)
-        circle((.5, 0), radius: 1.5mm, fill: black)
-        set-style(stroke: (paint: black, thickness: 0.75mm))
-        if (calc.rem(counter(page).get().first(), 2) == 1) {
-          for x in range(-490, 480, step: 10){
-            line((x / 1000, -1.5mm), ((x + 15) / 1000, 1.5mm))
-          }
-        } else {
-          for x in range(-470, 500, step: 10){
-            line((x / 1000, -1.5mm), ((x - 15) / 1000, 1.5mm))
-          }
-        }
-        content((0, 0pt), KochFont(size: 18pt, stroke: 5pt + white)[Flying Circus])
-        content((0, 0pt), KochFont(size: 18pt, stroke: 0.0pt + black)[Flying Circus])
-      }))
+    header: context {
+      align(
+        center,
+        layout(ly => cetz.canvas(
+          length: ly.width,
+          {
+            import cetz.draw: *
+            set-style(stroke: (paint: black, thickness: 0.75mm))
+            line((-.5, 0), (.5, 0))
+            circle((-.5, 0), radius: 1.5mm, fill: black)
+            circle((.5, 0), radius: 1.5mm, fill: black)
+            set-style(stroke: (paint: black, thickness: 0.75mm))
+            if (calc.rem(counter(page).get().first(), 2) == 1) {
+              for x in range(-490, 480, step: 10) {
+                line((x / 1000, -1.5mm), ((x + 15) / 1000, 1.5mm))
+              }
+            } else {
+              for x in range(-470, 500, step: 10) {
+                line((x / 1000, -1.5mm), ((x - 15) / 1000, 1.5mm))
+              }
+            }
+            content((0, 0pt), KochFont(size: 18pt, stroke: 5pt + white)[Flying Circus])
+            content((0, 0pt), KochFont(size: 18pt, stroke: 0.0pt + black)[Flying Circus])
+          },
+        )),
+      )
     },
     //Footer is alternating directions with page number at outside and only partial bar
-    footer: context{
-      align(center, cetz.canvas(length: 100%, {
-        import cetz.draw:*
-        set-style(stroke: (paint: black, thickness: 0.75mm))
-        if (calc.rem(counter(page).get().first(), 2) == 1) {
-          content((-.5, 0), KochFont(size: 18pt)[#counter(page).get().first()])
+    footer: context {
+      align(
+        center,
+        layout(ly => cetz.canvas(
+          length: ly.width,
+          {
+            import cetz.draw: *
+            set-style(stroke: (paint: black, thickness: 0.75mm))
+            if (calc.rem(counter(page).get().first(), 2) == 1) {
+              content((-.5, 0), KochFont(size: 18pt)[#counter(page).get().first()])
 
-          line((-.45, 0), (.5, 0))
-          circle((-.45, 0), radius: 1.5mm, fill: black)
-          circle((.5, 0), radius: 1.5mm, fill: black)
-          for x in range(-440, 480, step: 13){
-            line((x / 1000, -2mm), ((x + 20) / 1000, 2mm))
-          }
-        } else {
-          content((.5, 0), KochFont(size: 18pt)[#counter(page).get().first()])
+              line((-.45, 0), (.5, 0))
+              circle((-.45, 0), radius: 1.5mm, fill: black)
+              circle((.5, 0), radius: 1.5mm, fill: black)
+              for x in range(-440, 480, step: 13) {
+                line((x / 1000, -2mm), ((x + 20) / 1000, 2mm))
+              }
+            } else {
+              content((.5, 0), KochFont(size: 18pt)[#counter(page).get().first()])
 
-          line((-.5, 0), (.45, 0))
-          circle((-.5, 0), radius: 1.5mm, fill: black)
-          circle((.45, 0), radius: 1.5mm, fill: black)
-          for x in range(-470, 450, step: 13){
-            line((x / 1000, -2mm), ((x - 20) / 1000, 2mm))
-          }
-        }
-      }))
+              line((-.5, 0), (.45, 0))
+              circle((-.5, 0), radius: 1.5mm, fill: black)
+              circle((.45, 0), radius: 1.5mm, fill: black)
+              for x in range(-470, 450, step: 13) {
+                line((x / 1000, -2mm), ((x - 20) / 1000, 2mm))
+              }
+            }
+          },
+        )),
+      )
     },
     //Margins, duh.
     margin: (top: 0.5in, bottom: 0.75in, left: 0.75in, right: 0.75in),
   )
 
 
-  //Place CoverImage, if it exists
-  if (CoverImg != none) {
-    page(paper: "a4", header: none, footer: none, margin: 0pt)[
-      #set image(height: 100%, fit: "stretch")
-      #CoverImg
+  if (not body-only) {
+    //Place CoverImage, if it exists
+    if (CoverImg != none) {
+      page(paper: "a4", header: none, footer: none, margin: 0pt)[
+        #set image(height: 100%, fit: "stretch")
+        #CoverImg
+      ]
+    }
+    //Create Title Page (and eventual TOC)
+    let onepage(body) = page(
+      //Header is evenly LtR, no text
+      header: context {
+        align(
+          center,
+          layout(ly => cetz.canvas(
+            length: ly.width,
+            {
+              import cetz.draw: *
+              set-style(stroke: (paint: black, thickness: 0.75mm))
+              line((-.45, 0), (.45, 0))
+              circle((-.45, 0), radius: 1.5mm, fill: black)
+              circle((.45, 0), radius: 1.5mm, fill: black)
+              for x in range(-440, 430, step: 13) {
+                line((x / 1000, -2mm), ((x + 20) / 1000, 2mm))
+              }
+            },
+          )),
+        )
+      },
+      //Footer is smaller and even LtR
+      footer: context {
+        set align(center)
+        layout(ly => cetz.canvas(
+          length: ly.width,
+          {
+            import cetz.draw: *
+            set-style(stroke: (paint: black, thickness: 0.75mm))
+            line((-.25, 0), (.25, 0))
+            circle((-.25, 0), radius: 1.5mm, fill: black)
+            circle((.25, 0), radius: 1.5mm, fill: black)
+            for x in range(-240, 230, step: 13) {
+              line((x / 1000, -2mm), ((x + 20) / 1000, 2mm))
+            }
+          },
+        ))
+      },
+      body,
+    )
+
+    onepage[
+      #set align(center)
+      //The Big FC
+      #KochFont(size: 75pt)[
+        Flying\
+        #box(rotate(90deg)[#scale(x: -100%)[$ theta.alt $]]) Circus #box(rotate(-90deg)[$ theta.alt $])
+      ]
+
+      //Title and description
+      #text(size: 24pt)[
+        #Desciption \
+        #Title
+      ]
+
+      //Fancy swirls
+      #text(size: 75pt)[
+        #box(rotate(-90deg, reflow: true)[#scale(y: 300%, reflow: true)[$ sigma.alt $]]) #box(
+          rotate(-90deg, reflow: true)[#scale(y: -300%, reflow: true)[$ sigma.alt $]],
+        )
+      ]
+
+      #v(1fr)
+      //Dedication is optional
+      #Dedication
+      #v(2fr)
+      //And the Author, of course
+      #text(size: 24pt)[
+        #Author
+        #v(1em)
+      ]
     ]
+    //Style outline
+    // show outline.title: it => {
+    //   text
+    // }
+    show outline.entry.where(level: 1): it => {
+      v(10pt, weak: true)
+      text(size: 20pt, it)
+    }
+
+    onepage[#align(
+        center,
+        box(
+          width: 80%,
+          outline(
+            depth: 10,
+            indent: 1em,
+            title: KochFont(size: 50pt, fill: white, stroke: black + 1pt)[Contents #h(1fr)],
+          ),
+        ),
+      )]
   }
-  //Create Title Page (and eventual TOC)
-  let onepage(body) = page(
-    //Header is evenly LtR, no text
-    header: context{
-      align(center, cetz.canvas(length: 100%, {
-        import cetz.draw:*
-        set-style(stroke: (paint: black, thickness: 0.75mm))
-        line((-.45, 0), (.45, 0))
-        circle((-.45, 0), radius: 1.5mm, fill: black)
-        circle((.45, 0), radius: 1.5mm, fill: black)
-        for x in range(-440, 430, step: 13){
-          line((x / 1000, -2mm), ((x + 20) / 1000, 2mm))
-        }
-      }))
-    },
-    //Footer is smaller and even LtR
-    footer: context{
-      set align(center)
-      cetz.canvas(length: 100%, {
-        import cetz.draw:*
-        set-style(stroke: (paint: black, thickness: 0.75mm))
-        line((-.25, 0), (.25, 0))
-        circle((-.25, 0), radius: 1.5mm, fill: black)
-        circle((.25, 0), radius: 1.5mm, fill: black)
-        for x in range(-240, 230, step: 13){
-          line((x / 1000, -2mm), ((x + 20) / 1000, 2mm))
-        }
-      })
-    },
-    body,
-  )
-  onepage[
-    #set align(center)
-    //The Big FC
-    #KochFont(size: 75pt)[
-      Flying\
-      #box(rotate(90deg)[#scale(x: -100%)[$ theta.alt $]]) Circus #box(rotate(-90deg)[$ theta.alt $])
-    ]
 
-    //Title and description
-    #text(size: 24pt)[
-      #Desciption \
-      #Title
-    ]
-
-    //Fancy swirls
-    #text(
-      size: 75pt,
-    )[
-      #box(rotate(-90deg, reflow: true)[#scale(y: 300%, reflow: true)[$ sigma.alt $]]) #box(rotate(-90deg, reflow: true)[#scale(y: -300%, reflow: true)[$ sigma.alt $]])
-    ]
-
-    #v(1fr)
-    //Dedication is optional
-    #Dedication
-    #v(2fr)
-    //And the Author, of course
-    #text(size: 24pt)[
-      #Author
-      #v(1em)
-    ]
-  ]
-  //Style outline
-  // show outline.title: it => {
-  //   text
-  // }
-  show outline.entry.where(level: 1): it => {
-    v(10pt, weak: true)
-    text(size: 20pt, it)
-  }
-
-  onepage[#align(
-      center,
-      box(
-        width: 80%,
-        outline(depth: 10, indent: 1em, title: KochFont(size: 50pt, fill: white, stroke: black + 1pt)[Contents #h(1fr)]),
-      ),
-    )]
-
+  set par(justify: true)
+  set text(hyphenate: false)
   //Set up headings (gotta be styled after #outline)
   show heading: it => {
     KochFont[#align(left)[#it.body]]
@@ -244,20 +290,28 @@
   pagebreak(weak: true)
   //Define image element
   let plane_image = if (Img != none) {
-    context cetz.canvas(length: 100%, {
-      import cetz.draw:*
-      content((0.5, 1), anchor: "north", MaybeImage(Img, width: page.width * 0.95, fit: "stretch"), name: "image")
-      if (BoxText != none) {
-        content("image." + BoxAnchor, anchor: BoxAnchor, padding: 5mm, align(center)[
-          #let cells = ()
-          #for (k, v) in BoxText {
-            cells.push(text(size: 12pt, k))
-            cells.push(text(size: 12pt, v))
-          }
-          #table(align: left, columns: 2, fill: white.transparentize(50%), stroke: black, ..cells)
-        ])
-      } else {}
-    })
+    context layout(ly => cetz.canvas(
+      length: ly.width,
+      {
+        import cetz.draw: *
+        content((0.5, 1), anchor: "north", MaybeImage(Img, width: page.width * 0.95, fit: "stretch"), name: "image")
+        if (BoxText != none) {
+          content(
+            "image." + BoxAnchor,
+            anchor: BoxAnchor,
+            padding: 5mm,
+            align(center)[
+              #let cells = ()
+              #for (k, v) in BoxText {
+                cells.push(text(size: 12pt, eval(k, mode: "markup")))
+                cells.push(text(size: 12pt, eval(v, mode: "markup")))
+              }
+              #table(align: left, columns: 2, fill: white.transparentize(50%), stroke: black, ..cells)
+            ],
+          )
+        } else { }
+      },
+    ))
   }
   //Define title element
   let plane_title = {
@@ -265,7 +319,11 @@
     set block(spacing: 0.1em)
     let hN = plane.keys().contains("Price")
     let hU = plane.keys().contains("Used")
-    text(size: 20pt)[#plane.Name];h(1fr); if (hN) { [#plane.Price;þ New] }; if (hN and hU) { [, ] }; if (hU) { [#plane.Used;þ Used] }
+    text(size: 20pt)[#plane.Name]
+    h(1fr)
+    if (hN) { [#plane.Price;þ New] }
+    if (hN and hU) { [, ] }
+    if (hU) { [#plane.Used;þ Used] }
 
     line(length: 100%, stroke: luma(100))
 
@@ -297,7 +355,7 @@
   )
   //Define the vital parts table element
   let vitalTable = table(
-    columns: (100%),
+    columns: 100%,
     rows: (auto, 1fr),
     align: center + horizon,
     table.header(table.cell(stroke: none)[Vital Parts]),
@@ -305,7 +363,7 @@
   )
   //Define the secondary stats table element
   let miscTable = table(
-    columns: (100%),
+    columns: 100%,
     align: center + horizon,
     [#plane.Propulsion],
     [#plane.Aerodynamics],
@@ -317,19 +375,22 @@
   grid(
     columns: 1,
     rows: (auto, 1fr, auto),
-    grid.cell(align: center, [
-      #plane_image
-      #plane_title
-      #v(-1em)
-      #context stack(
-        dir: ltr,
-        spacing: 1%,
-        box(width: 59%, height: measure(statTable).height, statTable),
-        box(width: 40%, height: measure(statTable).height, vitalTable),
-      )
-      #v(-1em)
-      #miscTable
-    ]),
+    grid.cell(
+      align: center,
+      [
+        #plane_image
+        #plane_title
+        #v(-1em)
+        #context stack(
+          dir: ltr,
+          spacing: 1%,
+          box(width: 59%, height: measure(statTable).height, statTable),
+          box(width: 40%, height: measure(statTable).height, vitalTable),
+        )
+        #v(-1em)
+        #miscTable
+      ],
+    ),
     grid.cell(columns(2)[#DescriptiveText], inset: (y: 0.5em)),
     grid.cell(align(center)[#text(size: 24pt)[#underline[#link(plane.Link)[Plane Builder Link]]]]),
   )
@@ -433,7 +494,15 @@
 /// - FirstPageContent (content): Goes on the first page. If no image is provided, it is not present.
 /// - AfterContent (content): Goes after the stat block. Always present.
 /// -> content
-#let FCVehicleFancy(vehicle, Img: none, TextVOffset: 0pt, BoxText: none, BoxAnchor: "north", FirstPageContent, AfterContent) = {
+#let FCVehicleFancy(
+  vehicle,
+  Img: none,
+  TextVOffset: 0pt,
+  BoxText: none,
+  BoxAnchor: "north",
+  FirstPageContent,
+  AfterContent,
+) = {
   //Define image element is done below because it needs context.
   //Define Firsttitle element
   let veh_title = [
@@ -512,35 +581,39 @@
   if (Img != none) {
     pagebreak(weak: true, to: "even")
     page(
-      background: align(
-        top,
-      )[
-        #context cetz.canvas(
-          length: 100%,
+      background: align(top)[
+        #context layout(ly => cetz.canvas(
+          length: ly.width,
           {
-            import cetz.draw:*
-            content((0.5, 1), anchor: "north", MaybeImage(Img, width: page.width, fit: "stretch"), name: "image"); if (BoxText != none) {
-              content("image." + BoxAnchor, anchor: BoxAnchor, padding: 1in, align(center)[
-                #let cells = ()
-                #for (k, v) in BoxText {
-                  cells.push(text(size: 12pt, [#k: #v]))
-                }
-                #table(
-                  align: left,
-                  columns: 1,
-                  fill: white.transparentize(50%),
-                  stroke: none,
-                  inset: (y: 0.25em),
-                  table.hline(),
-                  table.vline(x: 0),
-                  table.vline(x: 1),
-                  ..cells,
-                  table.hline(),
-                ),
-              ])
+            import cetz.draw: *
+            content((0.5, 1), anchor: "north", MaybeImage(Img, width: page.width, fit: "stretch"), name: "image")
+            if (BoxText != none) {
+              content(
+                "image." + BoxAnchor,
+                anchor: BoxAnchor,
+                padding: 1in,
+                align(center)[
+                  #let cells = ()
+                  #for (k, v) in BoxText {
+                    cells.push(text(size: 12pt, [#eval(k, mode: "markup"): #eval(v, mode: "markup")]))
+                  }
+                  #table(
+                    align: left,
+                    columns: 1,
+                    fill: white.transparentize(50%),
+                    stroke: none,
+                    inset: (y: 0.25em),
+                    table.hline(),
+                    table.vline(x: 0),
+                    table.vline(x: 1),
+                    ..cells,
+                    table.hline(),
+                  ),
+                ],
+              )
             }
           },
-        )
+        ))
       ],
       margin: (top: 0pt),
       header: none,
@@ -605,23 +678,26 @@
         data.push((value: 1, label: s))
       }
       #place(horizon, dy: -0.7cm, float: false)[
-        #cetz.canvas(length: 100%, {
-          import cetz.draw: *
-          import cetz-plot: *
-          set-style(stroke: (paint: black))
-          circle((0, 0), radius: 0.5, fill: white, stroke: none)
-          chart.piechart(
-            data,
-            radius: 0.5,
-            value-key: "value",
-            label-key: "label",
-            outer-label: (content: none),
-            inner-label: (content: "LABEL", radius: 130%),
-            slice-style: ((fill: white, stroke: black),),
-            legend: (label: none),
-          )
-          line((0, 0), (0, 0.5), stroke: (thickness: 3pt))
-        })
+        #layout(ly => cetz.canvas(
+          length: ly.width,
+          {
+            import cetz.draw: *
+            import cetz-plot: *
+            set-style(stroke: (paint: black))
+            circle((0, 0), radius: 0.5, fill: white, stroke: none)
+            chart.piechart(
+              data,
+              radius: 0.5,
+              value-key: "value",
+              label-key: "label",
+              outer-label: (content: none),
+              inner-label: (content: "LABEL", radius: 130%),
+              slice-style: ((fill: white, stroke: black),),
+              legend: (label: none),
+            )
+            line((0, 0), (0, 0.5), stroke: (thickness: 3pt))
+          },
+        ))
       ]
     ],
     // hlinex(end: 2, expand: (0pt, 0.1em)),
@@ -641,7 +717,7 @@
   let cells = ()
   for weap in Ship.Weapons {
     cells.push([#weap.Name])
-    for dir in ("Fore", "Left", "Right", "Rear", "Up"){
+    for dir in ("Fore", "Left", "Right", "Rear", "Up") {
       cells.push([#weap.at(dir, default: "-")])
     }
   }
@@ -658,18 +734,18 @@
 
   place(top + left, box(width: 0pt, height: 0pt, hide[= #Ship.Name]))
   grid(columns: 1, rows: (auto, 1fr, auto), grid.cell([
-    #ship_image
-    #ship_title
-    #v(0.5em)
-  ]), grid.cell([#DescriptiveText
-    #v(1.5em)
-  ]), grid.cell([
-    #statTable
-    #align(center)[#KochFont(size: 18pt)[Weapons]]
-    #weaponTable
-    #align(center)[#KochFont(size: 18pt)[Notes]]
-    #notes
-  ]))
+      #ship_image
+      #ship_title
+      #v(0.5em)
+    ]), grid.cell([#DescriptiveText
+      #v(1.5em)
+    ]), grid.cell([
+      #statTable
+      #align(center)[#KochFont(size: 18pt)[Weapons]]
+      #weaponTable
+      #align(center)[#KochFont(size: 18pt)[Notes]]
+      #notes
+    ]))
 }
 
 /// Defines the FlyingCircus Weapon card. Image optional.
@@ -678,13 +754,15 @@
 /// - Img (bytes | none): Image to go above the card. Set to none to remove.
 /// - DescriptiveText (content): Goes below the name and above the stats table.
 /// -> content
-#let FCWeapon(weapon, Img: none, DescriptiveText)={
+#let FCWeapon(weapon, Img: none, DescriptiveText) = {
   place(top + left, box(width: 0pt, height: 0pt, hide[== #weapon.Name]))
   MaybeImage(Img)
   {
     set text(fill: luma(100))
     set block(spacing: 0.1em)
-    text(size: 20pt)[#weapon.Name]; h(1fr); weapon.Price
+    text(size: 20pt)[#weapon.Name]
+    h(1fr)
+    weapon.Price
     line(length: 100%, stroke: luma(100))
   }
   DescriptiveText
@@ -715,7 +793,7 @@
 }
 
 
- 
+
 #let FCPSection(title, content) = {
   block(
     spacing: 0.4em,
@@ -723,7 +801,7 @@
     stroke: (bottom: 1pt),
   )[#KochFont(size: 14pt)[#title]#h(1fr)#text(size: 10pt)[#emph[#content]]]
 }
- 
+
 #let FCPRule() = {
   context if (here().position().x.inches() < 5.5) {
     block(spacing: 0.4em)[
@@ -735,12 +813,12 @@
     ]
   }
 }
- 
+
 #let FCPStatTable(name, tagline, stats) = {
   set par(spacing: 0.6em)
   block(stroke: (bottom: 0.5pt), inset: (bottom: 0.75pt))[#smallcaps[#name]]
   emph[#tagline]
-  let cells = (table.hline(stroke: 2pt), table.vline(stroke: 2pt),)
+  let cells = (table.hline(stroke: 2pt), table.vline(stroke: 2pt))
   let cells2 = ()
   for (k, v) in stats {
     cells.push(table.cell(fill: black)[#text(fill: white)[#smallcaps[#k]]])
@@ -772,52 +850,61 @@
     //Header is nothing
     header: none,
     //For the Playbook the background contains the header and lines.
-    background: context{
-      cetz.canvas(length: 100%, {
-        import cetz.draw:*
-        set-style(stroke: (paint: black, thickness: 0.75mm))
-        line((0, 0), (1, 0.7071), stroke: white)
-        let topl = (0.3in, 7.9in)
-        let topm = ac(topl, (5.6in, 0mm))
-        let topr = ac(topl, (11.1in, 0mm))
-        circle(topl, radius: 1.5mm, fill: black)
-        circle(topr, radius: 1.5mm, fill: black)
-        line(topl, topr)
-        line(ac(topl, (0mm, 1.5mm)), ac(topr, (0mm, 1.5mm)), stroke: 0.5mm)
-        line(ac(topl, (0mm, -1.5mm)), ac(topr, (0mm, -1.5mm)), stroke: 0.5mm)
-        line(topm, ac(topm, (0mm, -7.58in)))
+    background: context {
+      layout(ly => cetz.canvas(
+        length: ly.width,
+        {
+          import cetz.draw: *
+          set-style(stroke: (paint: black, thickness: 0.75mm))
+          line((0, 0), (1, 0.7071), stroke: white)
+          let topl = (0.3in, 7.9in)
+          let topm = ac(topl, (5.6in, 0mm))
+          let topr = ac(topl, (11.1in, 0mm))
+          circle(topl, radius: 1.5mm, fill: black)
+          circle(topr, radius: 1.5mm, fill: black)
+          line(topl, topr)
+          line(ac(topl, (0mm, 1.5mm)), ac(topr, (0mm, 1.5mm)), stroke: 0.5mm)
+          line(ac(topl, (0mm, -1.5mm)), ac(topr, (0mm, -1.5mm)), stroke: 0.5mm)
+          line(topm, ac(topm, (0mm, -7.58in)))
 
-        set-style(stroke: (paint: black, thickness: 0.25mm))
-        line(ac(topl, (0.3mm, 0mm)), ac(topl, (0.3mm, -8in)))
-        line(ac(topl, (-0.3mm, 0mm)), ac(topl, (-0.3mm, -8in)))
-        line(ac(topr, (0.3mm, 0mm)), ac(topr, (0.3mm, -8in)))
-        line(ac(topr, (-0.3mm, 0mm)), ac(topr, (-0.3mm, -8in)))
+          set-style(stroke: (paint: black, thickness: 0.25mm))
+          line(ac(topl, (0.3mm, 0mm)), ac(topl, (0.3mm, -8in)))
+          line(ac(topl, (-0.3mm, 0mm)), ac(topl, (-0.3mm, -8in)))
+          line(ac(topr, (0.3mm, 0mm)), ac(topr, (0.3mm, -8in)))
+          line(ac(topr, (-0.3mm, 0mm)), ac(topr, (-0.3mm, -8in)))
 
-        if (pb_counter.get().at(0) == 0) {
-          rect(ac(topl, (0.3mm, -1.5mm)), ac(topm, (0mm, -2cm)), fill: black)
-        }
+          if (pb_counter.get().at(0) == 0) {
+            rect(ac(topl, (0.3mm, -1.5mm)), ac(topm, (0mm, -2cm)), fill: black)
+          }
 
-        content(topm, KochFont(size: 18pt, stroke: 8pt + white)[Flying Circus])
-        content(topm, KochFont(size: 18pt, stroke: 0.0pt + black)[Flying Circus])
-      })
+          content(topm, KochFont(size: 18pt, stroke: 8pt + white)[Flying Circus])
+          content(topm, KochFont(size: 18pt, stroke: 0.0pt + black)[Flying Circus])
+        },
+      ))
     },
     //Footer is alternating directions with page number at outside and only partial bar
-    footer: context{
-      align(center, cetz.canvas(length: 100%, {
-        import cetz.draw:*
-        set-style(stroke: (paint: black, thickness: 0.75mm))
-        circle((-.5, 0), radius: 1.5mm, fill: black)
-        circle((.5, 0), radius: 1.5mm, fill: black)
-        for x in range(-470, 500, step: 10){
-          line((x / 1000, -2mm), ((x - 20) / 1000, 2mm))
-        }
+    footer: context {
+      align(
+        center,
+        layout(ly => cetz.canvas(
+          length: ly.width,
+          {
+            import cetz.draw: *
+            set-style(stroke: (paint: black, thickness: 0.75mm), fill: black)
+            circle((-.5, 0), radius: 1.5mm, fill: black)
+            circle((.5, 0), radius: 1.5mm, fill: black)
+            for x in range(-470, 500, step: 10) {
+              line((x / 1000, -2mm), ((x - 20) / 1000, 2mm))
+            }
 
-        set-style(stroke: (paint: black, thickness: 0.25mm))
-        line((-.5, 0.5mm), (.5, 0.5mm))
-        line((-.5, -0.5mm), (.5, -0.5mm))
-        content((0, 0), KochFont(size: 20pt, stroke: 10pt + white)[#Name])
-        content((0, 0), KochFont(size: 20pt, stroke: 0.0pt + black)[#Name])
-      }))
+            set-style(stroke: (paint: black, thickness: 0.25mm))
+            line((-.5, 0.5mm), (.5, 0.5mm))
+            line((-.5, -0.5mm), (.5, -0.5mm))
+            content((0, 0), KochFont(size: 20pt, stroke: 10pt + white)[#Name])
+            content((0, 0), KochFont(size: 20pt, stroke: 0.0pt + black)[#Name])
+          },
+        )),
+      )
     },
     //Margins, duh.
     margin: (top: 0.5in, bottom: 0.75in, left: 0.5in, right: 0.4in),
@@ -872,34 +959,43 @@
         #KochFont(size: 14pt)[Pronouns]
       ]
     ]#h(5%)#box(width: 50%)[
-      #cetz.canvas(length: (100% / (StatNames.len() + 1)), {
-        import cetz.draw:*
-        set-style(stroke: (paint: black, thickness: 0.5mm), content: (padding: 0.1))
-        line((0, -1cm), (0, 1cm), name: "L", stroke: (paint: white))
-        for (idx, sn) in StatNames.enumerate() {
-          circle((1.25 * idx + 0.5, 0.5), radius: 0.5, name: "S")
-          content((name: "S", anchor: "south"), [#sn], anchor: "north")
-        }
-      })
+      #layout(ly => cetz.canvas(
+        length: (ly.width / (StatNames.len() + 1)),
+        {
+          import cetz.draw: *
+          set-style(stroke: (paint: black, thickness: 0.5mm), content: (padding: 0.1))
+          line((0, -1cm), (0, 1cm), name: "L", stroke: (paint: white))
+          for (idx, sn) in StatNames.enumerate() {
+            circle((1.25 * idx + 0.5, 0.5), radius: 0.5, name: "S")
+            content((name: "S", anchor: "south"), [#sn], anchor: "north")
+          }
+        },
+      ))
     ]
     #FCPRule()
-    #box(baseline: -4pt)[#KochFont(size: 16pt)[Stress ]] #box(width: 60%)[#cetz.canvas(length: 100%, {
-        import cetz.draw:*
-        rect((0.4, -10pt), (1, 10pt), fill: black)
-        circle((0.05, 0), radius: 7pt, fill: white)
-        circle((0.15, 0), radius: 7pt, fill: white)
-        circle((0.25, 0), radius: 7pt, fill: white)
-        circle((0.35, 0), radius: 7pt, fill: white)
-        circle((0.45, 0), radius: 7pt, fill: white)
-        circle((0.55, 0), radius: 7pt, fill: white)
-        circle((0.65, 0), radius: 7pt, fill: white)
-        circle((0.75, 0), radius: 7pt, fill: white)
-        circle((0.85, 0), radius: 7pt, fill: white)
-        circle((0.95, 0), radius: 7pt, fill: white, stroke: (paint: white, dash: (0.5pt, 0.5pt), thickness: 0.03))
-      })] #box(baseline: -4pt)[#KochFont(size: 16pt)[XP ]] #box(width: 1fr)[#cetz.canvas(length: 100%, {
-        import cetz.draw:*
-        rect((0, -10pt), (1, 10pt))
-      })]
+    #box(baseline: -4pt)[#KochFont(size: 16pt)[Stress ]] #box(width: 60%)[#cetz.canvas(
+        length: 8cm,
+        {
+          import cetz.draw: *
+          rect((0.4, -10pt), (1, 10pt), fill: black)
+          circle((0.05, 0), radius: 7pt, fill: white)
+          circle((0.15, 0), radius: 7pt, fill: white)
+          circle((0.25, 0), radius: 7pt, fill: white)
+          circle((0.35, 0), radius: 7pt, fill: white)
+          circle((0.45, 0), radius: 7pt, fill: white)
+          circle((0.55, 0), radius: 7pt, fill: white)
+          circle((0.65, 0), radius: 7pt, fill: white)
+          circle((0.75, 0), radius: 7pt, fill: white)
+          circle((0.85, 0), radius: 7pt, fill: white)
+          circle((0.95, 0), radius: 7pt, fill: white, stroke: (paint: white, dash: (0.5pt, 0.5pt), thickness: 0.03))
+        },
+      )] #box(baseline: -4pt)[#KochFont(size: 16pt)[XP ]] #box(width: 1fr)[#cetz.canvas(
+        length: 3cm,
+        {
+          import cetz.draw: *
+          rect((0, -10pt), (1, 10pt))
+        },
+      )]
     #columns(2)[
       #Triggers
       #colbreak()
@@ -939,7 +1035,11 @@
     let hN = plane.keys().contains("Price")
     let hU = plane.keys().contains("Used")
     let hUp = plane.keys().contains("Upkeep")
-    text(size: 20pt)[#plane.Name];h(1fr); if (hN) { [#plane.Price;þ New] }; if (hN and hU) { [, ] }; if (hU) { [#plane.Used;þ Used] }
+    text(size: 20pt)[#plane.Name]
+    h(1fr)
+    if (hN) { [#plane.Price;þ New] }
+    if (hN and hU) { [, ] }
+    if (hU) { [#plane.Used;þ Used] }
 
     line(length: 100%, stroke: luma(100))
 
@@ -948,25 +1048,35 @@
 
   plane_title
   grid(columns: (1fr, 3fr), grid.cell(
-    align: right,
-    place(auto, float: true, scope: "parent", dx: img_shift_dx, dy: img_shift_dy, cetz.canvas(length: 100%, {
-      import cetz.draw: *
-      content((0, 0.0), (img_scale, 1), img)
-    })),
-  ), [
-    #emph(content)
-    #table(
-      align: center,
-      columns: (2fr, 1fr, 1fr),
-      [Speeds],
-      [Handling],
-      [Structure],
-      [#plane.Speeds],
-      [#plane.Handling],
-      [#plane.Structure],
-      table.cell(align: left, colspan: 3, plane.Notes),
-    )
-  ])
+      align: right,
+      place(
+        auto,
+        float: true,
+        scope: "parent",
+        dx: img_shift_dx,
+        dy: img_shift_dy,
+        layout(ly => cetz.canvas(
+          length: ly.width,
+          {
+            import cetz.draw: *
+            content((0, 0.0), (img_scale, 1), img)
+          },
+        )),
+      ),
+    ), [
+      #emph(content)
+      #table(
+        align: center,
+        columns: (2fr, 1fr, 1fr),
+        [Speeds],
+        [Handling],
+        [Structure],
+        [#plane.Speeds],
+        [#plane.Handling],
+        [#plane.Structure],
+        table.cell(align: left, colspan: 3, plane.Notes),
+      )
+    ])
 }
 
 
@@ -977,7 +1087,11 @@
     let hN = airship.keys().contains("Price")
     let hU = airship.keys().contains("Used")
     let hUp = airship.keys().contains("Upkeep")
-    text(size: 20pt)[#airship.Name];h(1fr); if (hN) { [#airship.Price;þ New] }; if (hN and hU) { [, ] }; if (hU) { [#airship.Used;þ Used] }
+    text(size: 20pt)[#airship.Name]
+    h(1fr)
+    if (hN) { [#airship.Price;þ New] }
+    if (hN and hU) { [, ] }
+    if (hU) { [#airship.Used;þ Used] }
 
     line(length: 100%, stroke: luma(100))
 
@@ -986,25 +1100,35 @@
 
   title
   grid(columns: (1fr, 3fr), grid.cell(
-    align: right,
-    place(auto, float: true, scope: "parent", dx: img_shift_dx, dy: img_shift_dy, cetz.canvas(length: 100%, {
-      import cetz.draw: *
-      content((0, 0.0), (img_scale, 1), img)
-    })),
-  ), [
-    #emph(content)
-    #table(
-      align: center,
-      columns: (1fr, 1fr, 1fr, 1fr),
-      [Max Speed],
-      [Lift],
-      [Handling],
-      [Toughness],
-      [#airship.Speed],
-      [#airship.Lift],
-      [#airship.Handling],
-      [#airship.Toughness],
-      table.cell(align: left, colspan: 4, airship.Notes),
-    )
-  ])
+      align: right,
+      place(
+        auto,
+        float: true,
+        scope: "parent",
+        dx: img_shift_dx,
+        dy: img_shift_dy,
+        layout(ly => cetz.canvas(
+          length: ly.width,
+          {
+            import cetz.draw: *
+            content((0, 0.0), (img_scale, 1), img)
+          },
+        )),
+      ),
+    ), [
+      #emph(content)
+      #table(
+        align: center,
+        columns: (1fr, 1fr, 1fr, 1fr),
+        [Max Speed],
+        [Lift],
+        [Handling],
+        [Toughness],
+        [#airship.Speed],
+        [#airship.Lift],
+        [#airship.Handling],
+        [#airship.Toughness],
+        table.cell(align: left, colspan: 4, airship.Notes),
+      )
+    ])
 }

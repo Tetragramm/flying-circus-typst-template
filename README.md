@@ -1,5 +1,5 @@
 # The `flyingcircus` Package
-<div align="center">Version 3.2.1</div>
+<div align="center">Version 3.3.0</div>
 
 Do you want your homebrew to have the same fancy style as the Flying Circus book? Do you want a simple command to generate a whole aircraft stat page, vehicle, or even ship?  I'll bet you do! Take a look at the Flying Circus Aircraft Catalog Template. 
 
@@ -20,7 +20,7 @@ Or check out the [Discord server](https://discord.gg/HKdyUuvmcb).
 These instructions will get you a copy of the project up and running on the typst web app. 
 
 ```typ
-#import "@preview/flyingcircus:3.2.1": *
+#import "@preview/flyingcircus:3.3.0": *
 
 #show: FlyingCircus.with(
   Title: title,
@@ -37,7 +37,7 @@ These instructions will get you a copy of the project up and running on the typs
 The first thing is the FlyingCircus style.
 
 ```typ
-#import "@preview/flyingcircus:3.2.0": *
+#import "@preview/flyingcircus:3.3.0": *
 
 /// Defines the FlyingCircus template
 ///
@@ -46,6 +46,7 @@ The first thing is the FlyingCircus style.
 /// - CoverImg (image): Image to make the first page of the document.
 /// - Description (str): Text to go with the title on the title page.
 /// - Dedication (str): Dedication to go down below the title on the title page.
+/// - body-only (bool): Whether to hide the cover, title, and table of contents.  Requested for single-sheet planes.
 /// - body (content)
 /// -> content
 

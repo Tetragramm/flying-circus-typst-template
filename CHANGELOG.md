@@ -1,3 +1,18 @@
+# (https://github.com/Tetragramm/flying-circus-typst-template/releases/tag/v3.3.0)
+## Added
+Updating for Typst version 0.13.1
+Updating for new Cetz version
+Added parameter to the template that facilitates single-plane, single-sheet books.  `body-only` hides the cover, title page, and table of contents.
+## Removed
+---
+## Changed
+Fixed some new bugs from the new compiler version.  Cetz was doing something odd.
+Automatic font switching between Wingdings and Material Icons for the propeller synchronization symbol.
+
+## Migration Guide from v3.2.1
+N/A
+---
+
 # (https://github.com/Tetragramm/flying-circus-typst-template/releases/tag/v3.2.1)
 ## Added
 Updating for Typst version 0.13.0

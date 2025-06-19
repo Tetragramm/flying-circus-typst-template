@@ -1,5 +1,5 @@
-#import "@preview/flyingcircus:3.2.1" : *
-#import "@preview/cetz:0.3.2"
+#import "@preview/flyingcircus:3.3.0": *
+#import "@preview/cetz:0.4.0"
 
 #let title = "Sample Flying Circus Book"
 #let author = "Tetragramm"
@@ -22,31 +22,31 @@
   BoxText: ("Role": "Fast Bomber", "First Flight": "1601", "Strengths": "Fastest Bomber"),
   BoxAnchor: "north-west",
 )[
-_This text is where the description of the plane goes. Formatting is pretty simple. This is italic._
- 
-#underline[Words get underlined.]
+  _This text is where the description of the plane goes. Formatting is pretty simple. This is italic._
 
-Leave an *empty* line or it will be the same paragraph
- 
-+ numbered list
-  + Sub-Lists!
-+ Things! But you can have multiple lines for an item by indenting the next one, or just one long line.
-  - Sub-items!
+  #underline[Words get underlined.]
 
-- Unnumbered list
- 
-Break the column where you want it with `#colbreak()`
+  Leave an *empty* line or it will be the same paragraph
 
-Images can be added by doing `#image(path)`. The FC functions do fancy stuff though, and may override some arguments
-when you pass an image into them using an argument.
+  + numbered list
+    + Sub-Lists!
+  + Things! But you can have multiple lines for an item by indenting the next one, or just one long line.
+    - Sub-items!
 
-Find the full documentation for Typst on the website #link("https://typst.app/docs")[#text(fill: blue)[HERE]]
+  - Unnumbered list
+
+  Break the column where you want it with `#colbreak()`
+
+  Images can be added by doing `#image(path)`. The FC functions do fancy stuff though, and may override some arguments
+  when you pass an image into them using an argument.
+
+  Find the full documentation for Typst on the website #link("https://typst.app/docs")[#text(fill: blue)[HERE]]
 ]
 
 //If we don't want all our planes at the top level of the table of contents.  EX: if we want
 // - Intro
 // - Story
-// - Planes 
+// - Planes
 //   - First Plane
 // We break the page, and create a HiddenHeading, that doesn't show up in the document (Or a normal heading, if that's what you need)
 //Then we set the heading offset to one so everything after that is indented one level in the table of contents.
@@ -133,11 +133,11 @@ Find the full documentation for Typst on the website #link("https://typst.app/do
   their anti- aircraft guns were also effective against surface targets.
 ][
   160 crew
-] 
- 
+]
+
 #HiddenHeading[= Playbooks]
 #set heading(offset: 1)
- 
+
 #FCPlaybook(
   //Obvious
   Name: "A Worker",
@@ -145,8 +145,7 @@ Find the full documentation for Typst on the website #link("https://typst.app/do
   Subhead: "Industrial Town",
   //This is the left column of the first page, all the character questions.
   Character: [
-    #block(
-      )[
+    #block()[
       #set par(justify: true)
       _The Old World might be gone, but many of its technological wonders persist, and to keep them going, those towns that can
       still support industry work double-hard. Many people, be they refugees from the old cities or poor folks from across the
@@ -291,7 +290,11 @@ Find the full documentation for Typst on the website #link("https://typst.app/do
 
     #FCPStatTable("Worn Down", "Just punching the clock.", (Hard: "+2", Keen: "+2", Calm: "+2", Daring: "-4"))
 
-    #FCPStatTable("Safety Inspector", "No point taking extra risks.", (Hard: "-2", Keen: "+2", Calm: "+4", Daring: "-2"))
+    #FCPStatTable(
+      "Safety Inspector",
+      "No point taking extra risks.",
+      (Hard: "-2", Keen: "+2", Calm: "+4", Daring: "-2"),
+    )
   ],
   //This is defining them so the circles show up right.  It does not check to make sure they're the same as the StatTables.
   StatNames: ("Hard", "Keen", "Calm", "Daring"),
@@ -432,8 +435,6 @@ Find the full documentation for Typst on the website #link("https://typst.app/do
     Pushes Weather Flak against attackers.],
 )
 
-#FCShortAirship(
-  AirDestroyer,
-)[The most common form of Air Destroyer in the war, forming the basis of the Gotha Empire's zeppelin fleet. A warlord
+#FCShortAirship(AirDestroyer)[The most common form of Air Destroyer in the war, forming the basis of the Gotha Empire's zeppelin fleet. A warlord
   repairing a downed Jörmungandr can threaten an entire region.]
 
