@@ -1,5 +1,5 @@
 # The `flyingcircus` Package
-<div align="center">Version 3.3.0</div>
+<div align="center">Version 4.0.0</div>
 
 Do you want your homebrew to have the same fancy style as the Flying Circus book? Do you want a simple command to generate a whole aircraft stat page, vehicle, or even ship?  I'll bet you do! Take a look at the Flying Circus Aircraft Catalog Template. 
 
@@ -20,7 +20,7 @@ Or check out the [Discord server](https://discord.gg/HKdyUuvmcb).
 These instructions will get you a copy of the project up and running on the typst web app. 
 
 ```typ
-#import "@preview/flyingcircus:3.3.0": *
+#import "@preview/flyingcircus:4.0.0": *
 
 #show: FlyingCircus.with(
   Title: title,
@@ -29,24 +29,31 @@ These instructions will get you a copy of the project up and running on the typs
   Dedication: [It's Alive!!! MUAHAHAHA!],
 )
 
-#FCPlane(json("My Plane_stats.json"), Nickname:"My First Plane")
+#let myplanelink = "https://tetragramm.github.io/PlaneBuilder/index.html?json=AAEAjATAdA7MCwAhAhgZwJYGMAEj0AcAbZAOwFNgBAK4WgMFsfqcZBfZoHQAlACwHsSybAFl+AF34AnAEbIArtgBaYMNgAcABl75gAJGABcYACBa1GkzYAIVhw4B-h8FsAoex8-ngPAUNES0nKKKmpaOsAAwADq0QCSPnyCwmKSsgrKqhraurRmlACCUABmxQACAAmMAJBUAPwAAbSNzU32bEwWTp5mHL1RXvb9PZ2mjLa2HhPskXaj3p6zNZaDy6ssAKCe1BZsFuszTJMHSxwA4CdMpwf21JHUdPuMO-uvHk83B0A"
+
+#FCPlane(FCParseLink(myplanelink), Nickname:"My First Plane")[This is where I describe my plane's lore!]
 ```
 
 ## Usage
 
-The first thing is the FlyingCircus style.
+The first thing is to use the FlyingCircus template.  The Title and Author are self-explanatory, I hope.  Cover Image is optional, and if present is stretched to the entire first page of the document. Description is what kind of book this is.  It goes right above the title.
+Dedication goes below the spacer, and is just a place for text.
+
+The body-only option skips all the front matter and just applies the formatting.
+
+body is the variable the captures the rest of the document when you use the template with the show rule, as below.
 
 ```typ
-#import "@preview/flyingcircus:3.3.0": *
+#import "@preview/flyingcircus:4.0.0": *
 
 /// Defines the FlyingCircus template
 ///
 /// - Title (str): Title of the document. Goes in metadata and on title page.
 /// - Author (str): Author(s) of the document. Goes in metadata and on title page.
-/// - CoverImg (image): Image to make the first page of the document.
-/// - Description (str): Text to go with the title on the title page.
-/// - Dedication (str): Dedication to go down below the title on the title page.
-/// - body-only (bool): Whether to hide the cover, title, and table of contents.  Requested for single-sheet planes.
+/// - CoverImg (image): Optional Image to make the first page of the document.
+/// - Description (str): Text to go with the title on the title page. Default: "Aircraft Catalogue"
+/// - Dedication (str): Dedication to go down below the title on the title page. Default: ""
+/// - body-only (bool): Whether to skip the cover, title, and contents pages.
 /// - body (content)
 /// -> content
 
@@ -59,16 +66,28 @@ The first thing is the FlyingCircus style.
 )
 ```
 
+New in 4.0.0: The FCParseLink function. It uses the webassembly plugin that implements the plane builder to parse out the data, construct all the stats of the airplane, and output the value into the required json structure.  You can edit that in typst, as shown below, to customize what is actually displayed.
+```typ
+/// Defines the parsing of Plane Builder links into json files using the webassembly implementation of the builder.
+/// link (str): The link to be parsed.  Should be of the form "https://tetragramm.github.io/.*/?json=.*"
+/// locale (str): Values "de", "fr", "es", or "en". Defaults to en. Changes the language of the vital parts and armament sections  May change other sections later? Not sure.
+#let lnk = "https://tetragramm.github.io/PlaneBuilder/index.html?json=AAEAjATAdA7MCwAhAhgZwJYGMAEj0AcAbZAOwFNgBAK4WgMFsfqcZBfZoHQAlACwHsSybAFl+AF34AnAEbIArtgBaYMNgAcABl75gAJGABcYACBa1GkzYAIVhw4B-h8FsAoex8-ngPAUNES0nKKKmpaOsAAwADq0QCSPnyCwmKSsgrKqhraurRmlACCUABmxQACAAmMAJBUAPwAAbSNzU32bEwWTp5mHL1RXvb9PZ2mjLa2HhPskXaj3p6zNZaDy6ssAKCe1BZsFuszTJMHSxwA4CdMpwf21JHUdPuMO-uvHk83B0A"
+
+#let plane-json = FCParseLink(lnk)
+#plane-json.insert("Armament", "Puny pea-shooters");
+#FCPlane(plane-json)[]
+```
+
 Next is the FCPlane function for making plane pages.
 ```typ
 /// Defines the FlyingCircus Plane page.  Always on a new page. Image optional.
 ///
 /// - Plane (dictionary): dictionary representing the plane stats.
 /// - Nickname (str): Nickname to go under the aircraft name.
-/// - Img (image | none): Image to go at the top of the page. Set to none to remove.
-/// - BoxText (dictionary): Pairs of values to go in the box over the image. Does nothing if no Img provided.
+/// - Img (image | none): Image to go at the top of the page. Set to none to remove. Defaults to the "Default Image"
+/// - BoxText (dictionary): Pairs of values to go in the box over the image. Does nothing if Img=none.
 /// - BoxAnchor (str): Which anchor of the image to put the box in?  Sample values are "north", "south-west", "center".
-/// - DescriptiveText (content)
+/// - DescriptiveText (content): This is where you put the lore.
 /// -> content
 
 
