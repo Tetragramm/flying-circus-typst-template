@@ -1,6 +1,6 @@
-#import "@preview/cetz:0.4.0"
-#import "@preview/cetz-plot:0.1.2"
-#import "@preview/cuti:0.2.1": regex-fakebold
+#import "@preview/cetz:0.4.2"
+#import "@preview/cetz-plot:0.1.3"
+#import "@preview/cuti:0.4.0": fakeitalic, regex-fakebold
 
 /// Sets the tex to the Koch Fette FC font for people who don't want to remember that.
 ///
@@ -9,27 +9,35 @@
 /// -> content
 #let KochFont(body, ..args) = text(..args)[#text(font: "Koch Fette FC")[#body]]
 
-#let defaultImg = read("images/Default.png", encoding: none)
-
-#let regex-fakeitalic(reg-exp: "\b.+?\b", ang: -18.4deg, s) = {
-  show regex(reg-exp): it => {
-    box(skew(ax: ang, reflow: false, it))
-  }
-  s
-}
+#let defaultImg = image("images/Default.png")
 
 #let fakesc(s) = {
   show regex("[\p{Lu}]"): text.with(1.25em)
   text(0.8em, upper(s))
 }
 
+#let eqcolumns(n, gutter: 4%, content) = {
+  layout(size => [
+    #let (height,) = measure(
+      block(
+        width: (1 / n) * size.width * (1 - float(gutter) * n),
+        content,
+      ),
+    )
+    #block(
+      height: height / n,
+      columns(n, gutter: gutter, content),
+    )
+  ])
+}
+
 /// Defines the FlyingCircus template
 ///
 /// - Title (str): Title of the document. Goes in metadata and on title page.
 /// - Author (str): Author(s) of the document. Goes in metadata and on title page.
-/// - CoverImg (bytes): Image to make the first page of the document.
-/// - Description (str): Text to go with the title on the title page.
-/// - Dedication (str): Dedication to go down below the title on the title page.
+/// - CoverImg (image): Optional Image to make the first page of the document.
+/// - Description (str): Text to go with the title on the title page. Default: "Aircraft Catalogue"
+/// - Dedication (str): Dedication to go down below the title on the title page. Default: ""
 /// - body-only (bool): Whether to skip the cover, title, and contents pages.
 /// - body (content)
 /// -> content
@@ -49,13 +57,14 @@
   // set par(spacing: 0.5em)
   set par(leading: 0.35em)
   set par(justify: true)
+  set par(justification-limits: (tracking: (min: -0.02em, max: 0.02em)))
   set list(indent: 1em)
   set enum(indent: 1em)
   set page(numbering: "1")
 
   //Create fake italics because fonts don't have it.
   show emph: it => {
-    regex-fakeitalic(it.body)
+    fakeitalic(it.body)
   }
 
   show strong: it => {
@@ -153,45 +162,47 @@
       ]
     }
     //Create Title Page (and eventual TOC)
-    let onepage(body) = page(
-      //Header is evenly LtR, no text
-      header: context {
-        align(
-          center,
+    let onepage(body) = {
+      set page(
+        //Header is evenly LtR, no text
+        header: context {
+          align(
+            center,
+            layout(ly => cetz.canvas(
+              length: ly.width,
+              {
+                import cetz.draw: *
+                set-style(stroke: (paint: black, thickness: 0.75mm))
+                line((-.45, 0), (.45, 0))
+                circle((-.45, 0), radius: 1.5mm, fill: black)
+                circle((.45, 0), radius: 1.5mm, fill: black)
+                for x in range(-440, 430, step: 13) {
+                  line((x / 1000, -2mm), ((x + 20) / 1000, 2mm))
+                }
+              },
+            )),
+          )
+        },
+        //Footer is smaller and even LtR
+        footer: context {
+          set align(center)
           layout(ly => cetz.canvas(
             length: ly.width,
             {
               import cetz.draw: *
               set-style(stroke: (paint: black, thickness: 0.75mm))
-              line((-.45, 0), (.45, 0))
-              circle((-.45, 0), radius: 1.5mm, fill: black)
-              circle((.45, 0), radius: 1.5mm, fill: black)
-              for x in range(-440, 430, step: 13) {
+              line((-.25, 0), (.25, 0))
+              circle((-.25, 0), radius: 1.5mm, fill: black)
+              circle((.25, 0), radius: 1.5mm, fill: black)
+              for x in range(-240, 230, step: 13) {
                 line((x / 1000, -2mm), ((x + 20) / 1000, 2mm))
               }
             },
-          )),
-        )
-      },
-      //Footer is smaller and even LtR
-      footer: context {
-        set align(center)
-        layout(ly => cetz.canvas(
-          length: ly.width,
-          {
-            import cetz.draw: *
-            set-style(stroke: (paint: black, thickness: 0.75mm))
-            line((-.25, 0), (.25, 0))
-            circle((-.25, 0), radius: 1.5mm, fill: black)
-            circle((.25, 0), radius: 1.5mm, fill: black)
-            for x in range(-240, 230, step: 13) {
-              line((x / 1000, -2mm), ((x + 20) / 1000, 2mm))
-            }
-          },
-        ))
-      },
-      body,
-    )
+          ))
+        },
+      )
+      body
+    }
 
     onepage[
       #set align(center)
@@ -234,16 +245,17 @@
     }
 
     onepage[#align(
-        center,
-        box(
-          width: 80%,
-          outline(
-            depth: 10,
-            indent: 1em,
-            title: KochFont(size: 50pt, fill: white, stroke: black + 1pt)[Contents #h(1fr)],
-          ),
+      center,
+      block(
+        breakable: true,
+        width: 80%,
+        outline(
+          depth: 10,
+          indent: 1em,
+          title: KochFont(size: 50pt, fill: white, stroke: black + 1pt)[Contents #h(1fr)],
         ),
-      )]
+      ),
+    )]
   }
 
   set par(justify: true)
@@ -309,7 +321,7 @@
               #table(align: left, columns: 2, fill: white.transparentize(50%), stroke: black, ..cells)
             ],
           )
-        } else { }
+        } else {}
       },
     ))
   }
@@ -391,7 +403,7 @@
         #miscTable
       ],
     ),
-    grid.cell(columns(2)[#DescriptiveText], inset: (y: 0.5em)),
+    grid.cell(eqcolumns(2)[#DescriptiveText], inset: (y: 0.5em)),
     grid.cell(align(center)[#text(size: 24pt)[#underline[#link(plane.Link)[Plane Builder Link]]]]),
   )
 }
@@ -515,42 +527,42 @@
   ]
   //Define title element
   let veh_title2 = align(center)[#box(width: 70%)[
-      #set par(leading: -1em)
-      #set text(fill: luma(100))
-      #set block(spacing: 0.1em)
-      #link(vehicle.Link)[#text(size: 20pt)[#vehicle.Name]]; #h(1fr); #vehicle.Price;þ
+    #set par(leading: -1em)
+    #set text(fill: luma(100))
+    #set block(spacing: 0.1em)
+    #link(vehicle.Link)[#text(size: 20pt)[#vehicle.Name]]; #h(1fr); #vehicle.Price;þ
 
-      #line(length: 100%, stroke: luma(100))
+    #line(length: 100%, stroke: luma(100))
 
-      #vehicle.Nickname;#h(1fr)Upkeep #vehicle.Upkeep;þ
-    ]]
+    #vehicle.Nickname;#h(1fr)Upkeep #vehicle.Upkeep;þ
+  ]]
   //Define the stat table element
   let veh_stats = align(center)[#box(width: 70%)[
-      #table(
-        align: center + horizon,
-        columns: (1fr, 1fr, 1fr, 1fr, 1fr, 1fr),
-        table.cell(colspan: 2, [Speed]),
-        table.cell(colspan: 2, [Torque]),
-        table.cell(colspan: 2, [Handling]),
-        table.cell(colspan: 2, [#vehicle.Speed]),
-        table.cell(colspan: 2, [#vehicle.Torque]),
-        table.cell(colspan: 2, [#vehicle.Handling]),
-        table.cell(colspan: 2, [Armour]),
-        table.cell(colspan: 2, [Integrity]),
-        table.cell(colspan: 2, [Safety]),
-        table.cell(colspan: 2, [#vehicle.Armour]),
-        table.cell(colspan: 2, [#vehicle.Integrity]),
-        table.cell(colspan: 2, [#vehicle.Safety]),
-        table.cell(colspan: 2, [Reliability]),
-        table.cell(colspan: 2, [Fuel Uses]),
-        table.cell(colspan: 2, [Stress]),
-        table.cell(colspan: 2, [#vehicle.Reliability]),
-        table.cell(colspan: 2, [#vehicle.at("Fuel Uses")]),
-        table.cell(colspan: 2, [#vehicle.Stress]),
-        table.cell(colspan: 3, [#vehicle.Size]),
-        table.cell(colspan: 3, [#vehicle.Cargo]),
-      )
-    ]]
+    #table(
+      align: center + horizon,
+      columns: (1fr, 1fr, 1fr, 1fr, 1fr, 1fr),
+      table.cell(colspan: 2, [Speed]),
+      table.cell(colspan: 2, [Torque]),
+      table.cell(colspan: 2, [Handling]),
+      table.cell(colspan: 2, [#vehicle.Speed]),
+      table.cell(colspan: 2, [#vehicle.Torque]),
+      table.cell(colspan: 2, [#vehicle.Handling]),
+      table.cell(colspan: 2, [Armour]),
+      table.cell(colspan: 2, [Integrity]),
+      table.cell(colspan: 2, [Safety]),
+      table.cell(colspan: 2, [#vehicle.Armour]),
+      table.cell(colspan: 2, [#vehicle.Integrity]),
+      table.cell(colspan: 2, [#vehicle.Safety]),
+      table.cell(colspan: 2, [Reliability]),
+      table.cell(colspan: 2, [Fuel Uses]),
+      table.cell(colspan: 2, [Stress]),
+      table.cell(colspan: 2, [#vehicle.Reliability]),
+      table.cell(colspan: 2, [#vehicle.at("Fuel Uses")]),
+      table.cell(colspan: 2, [#vehicle.Stress]),
+      table.cell(colspan: 3, [#vehicle.Size]),
+      table.cell(colspan: 3, [#vehicle.Cargo]),
+    )
+  ]]
   let cells = ()
   for row in vehicle.Crew {
     for (idx, (k, v)) in row.pairs().enumerate() {
@@ -733,19 +745,25 @@
   )
 
   place(top + left, box(width: 0pt, height: 0pt, hide[= #Ship.Name]))
-  grid(columns: 1, rows: (auto, 1fr, auto), grid.cell([
+  grid(
+    columns: 1,
+    rows: (auto, 1fr, auto),
+    grid.cell([
       #ship_image
       #ship_title
       #v(0.5em)
-    ]), grid.cell([#DescriptiveText
+    ]),
+    grid.cell([#DescriptiveText
       #v(1.5em)
-    ]), grid.cell([
+    ]),
+    grid.cell([
       #statTable
       #align(center)[#KochFont(size: 18pt)[Weapons]]
       #weaponTable
       #align(center)[#KochFont(size: 18pt)[Notes]]
       #notes
-    ]))
+    ]),
+  )
 }
 
 /// Defines the FlyingCircus Weapon card. Image optional.
@@ -974,28 +992,28 @@
     ]
     #FCPRule()
     #box(baseline: -4pt)[#KochFont(size: 16pt)[Stress ]] #box(width: 60%)[#cetz.canvas(
-        length: 8cm,
-        {
-          import cetz.draw: *
-          rect((0.4, -10pt), (1, 10pt), fill: black)
-          circle((0.05, 0), radius: 7pt, fill: white)
-          circle((0.15, 0), radius: 7pt, fill: white)
-          circle((0.25, 0), radius: 7pt, fill: white)
-          circle((0.35, 0), radius: 7pt, fill: white)
-          circle((0.45, 0), radius: 7pt, fill: white)
-          circle((0.55, 0), radius: 7pt, fill: white)
-          circle((0.65, 0), radius: 7pt, fill: white)
-          circle((0.75, 0), radius: 7pt, fill: white)
-          circle((0.85, 0), radius: 7pt, fill: white)
-          circle((0.95, 0), radius: 7pt, fill: white, stroke: (paint: white, dash: (0.5pt, 0.5pt), thickness: 0.03))
-        },
-      )] #box(baseline: -4pt)[#KochFont(size: 16pt)[XP ]] #box(width: 1fr)[#cetz.canvas(
-        length: 3cm,
-        {
-          import cetz.draw: *
-          rect((0, -10pt), (1, 10pt))
-        },
-      )]
+      length: 8cm,
+      {
+        import cetz.draw: *
+        rect((0.4, -10pt), (1, 10pt), fill: black)
+        circle((0.05, 0), radius: 7pt, fill: white)
+        circle((0.15, 0), radius: 7pt, fill: white)
+        circle((0.25, 0), radius: 7pt, fill: white)
+        circle((0.35, 0), radius: 7pt, fill: white)
+        circle((0.45, 0), radius: 7pt, fill: white)
+        circle((0.55, 0), radius: 7pt, fill: white)
+        circle((0.65, 0), radius: 7pt, fill: white)
+        circle((0.75, 0), radius: 7pt, fill: white)
+        circle((0.85, 0), radius: 7pt, fill: white)
+        circle((0.95, 0), radius: 7pt, fill: white, stroke: (paint: white, dash: (0.5pt, 0.5pt), thickness: 0.03))
+      },
+    )] #box(baseline: -4pt)[#KochFont(size: 16pt)[XP ]] #box(width: 1fr)[#cetz.canvas(
+      length: 3cm,
+      {
+        import cetz.draw: *
+        rect((0, -10pt), (1, 10pt))
+      },
+    )]
     #columns(2)[
       #Triggers
       #colbreak()
@@ -1008,11 +1026,11 @@
       gutter: 1em,
       grid.cell(inset: (bottom: 1em, right: 1em))[#FCPSection([Comrades#h(100fr)Trust?])[]
         #align(right)[#text(size: 30pt)[
-            ○\
-            ○\
-            ○\
-            ○
-          ]]],
+          ○\
+          ○\
+          ○\
+          ○
+        ]]],
       grid.vline(),
       grid.cell(inset: (bottom: 1em, left: 1em))[#FCPSection("Familiar Vices")[]
       ],
@@ -1047,7 +1065,9 @@
   }
 
   plane_title
-  grid(columns: (1fr, 3fr), grid.cell(
+  grid(
+    columns: (1fr, 3fr),
+    grid.cell(
       align: right,
       place(
         auto,
@@ -1063,7 +1083,8 @@
           },
         )),
       ),
-    ), [
+    ),
+    [
       #emph(content)
       #table(
         align: center,
@@ -1076,7 +1097,8 @@
         [#plane.Structure],
         table.cell(align: left, colspan: 3, plane.Notes),
       )
-    ])
+    ],
+  )
 }
 
 
@@ -1099,7 +1121,9 @@
   }
 
   title
-  grid(columns: (1fr, 3fr), grid.cell(
+  grid(
+    columns: (1fr, 3fr),
+    grid.cell(
       align: right,
       place(
         auto,
@@ -1115,7 +1139,8 @@
           },
         )),
       ),
-    ), [
+    ),
+    [
       #emph(content)
       #table(
         align: center,
@@ -1130,5 +1155,16 @@
         [#airship.Toughness],
         table.cell(align: left, colspan: 4, airship.Notes),
       )
-    ])
+    ],
+  )
+}
+
+#let fc_wasm = plugin("flyingcircus.wasm")
+/// Defines the parsing of Plane Builder links into json files using the webassembly implementation of the builder.
+/// link (str): The link to be parsed.  Should be of the form "https://tetragramm.github.io/.*/?json=.*"
+/// locale (str): Values "de", "fr", "es", or "en". Defaults to en. Changes the language of the vital parts and armament sections  May change other sections later? Not sure.
+#let FCParseLink(link, locale: "en") = {
+  let linkbit = link.split("json=").at(1).split("#").at(0)
+  let catalog_json = fc_wasm.catalog_json(bytes(linkbit), bytes(locale))
+  json(catalog_json)
 }

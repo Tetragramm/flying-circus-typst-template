@@ -1,3 +1,18 @@
+# (https://github.com/Tetragramm/flying-circus-typst-template/releases/tag/v4.0.0)
+## Added
+Add webassembly implementation of the aircraft builder to handle turning links directly into json.  No more manual intervention (for aircraft, at least).
+Add the FCParseLink function to do the parsing of links and interface with the webassembly.
+Updating all dependencies.
+## Removed
+---
+## Changed
+Fixed the spelling of "Description" in the template variables.  
+
+## Migration Guide from v3.3.0
+Fix the spelling of "Description" in your invocation of the template.
+Get rid of all the aircraft .json files and just use the link.
+---
+
 # (https://github.com/Tetragramm/flying-circus-typst-template/releases/tag/v3.3.0)
 ## Added
 Updating for Typst version 0.13.1

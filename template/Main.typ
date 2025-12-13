@@ -1,13 +1,17 @@
-#import "@preview/flyingcircus:3.3.0": *
-#import "@preview/cetz:0.4.0"
+#import "@preview/flyingcircus:4.0.0": *
+#import "@preview/cetz:0.4.2"
+
 
 #let title = "Sample Flying Circus Book"
 #let author = "Tetragramm"
+
 
 #show: FlyingCircus.with(
   Title: title,
   Author: author,
   CoverImg: image("images/Cover.png"),
+  Desciption: "My Custom Setting",
+  body-only: false,
   Dedication: [Look strange? You probably don't have the fonts installed.
 
     Download the fonts from #link("https://github.com/Tetragramm/flying-circus-typst-template/archive/refs/heads/Fonts.zip")[HERE].
@@ -15,8 +19,10 @@
     command line option --font-path to include them.],
 )
 
+#let myplanelink = "https://tetragramm.github.io/PlaneBuilder/index.html?json=AAEAjATAdA7MCwAhAhgZwJYGMAEj0AcAbZAOwFNgBAK4WgMFsfqcZBfZoHQAlACwHsSybAFl+AF34AnAEbIArtgBaYMNgAcABl75gAJGABcYACBa1GkzYAIVhw4B-h8FsAoex8-ngPAUNES0nKKKmpaOsAAwADq0QCSPnyCwmKSsgrKqhraurRmlACCUABmxQACAAmMAJBUAPwAAbSNzU32bEwWTp5mHL1RXvb9PZ2mjLa2HhPskXaj3p6zNZaDy6ssAKCe1BZsFuszTJMHSxwA4CdMpwf21JHUdPuMO-uvHk83B0A"
+
 #FCPlane(
-  json("./Basic Biplane_stats.json"),
+  FCParseLink(myplanelink),
   Nickname: "Bring home the bacon!",
   Img: image("images/Bergziegel_image.jpg"),
   BoxText: ("Role": "Fast Bomber", "First Flight": "1601", "Strengths": "Fastest Bomber"),
@@ -58,12 +64,17 @@
 #FCVehicleSimple(json("Sample Vehicle_stats.json"))[#lorem(120)]
 
 //We wrap this in a text box so that we can set a special rule to apply
-#text[
+#[
   //Set it so that the headings are offset by a large amount, so they don't show up in the table of contents.
-  #set heading(offset: 10)
+  #set heading(outlined: false)
   //
   #FCWeapon(
-    (Name: "Rifle/Carbine", Cells: (Hits: 1, Damage: 2, AP: 1, Range: "Extreme"), Price: "Scrip", Tags: "Manual"),
+    (
+      Name: "Rifle/Carbine",
+      Cells: (Hits: 1, Damage: 2, AP: 1, Range: "Extreme", Test: "Hello"),
+      Price: "Scrip",
+      Tags: "Manual",
+    ),
     Img: image("images/Rifle.png"),
   )[
     Note that you can set the text in the cell boxes to whatever you want.
@@ -79,9 +90,42 @@
   ]
 ]
 
+#let MaybeImage(img, ..args) = if (img != none) {
+  [
+    #set image(..args)
+    #img
+  ]
+}
+#let FCWeaponHeader(weapon, Img: none, DescriptiveText) = {
+  place(top + left, box(width: 0pt, height: 0pt, hide[== #weapon.Name]))
+  MaybeImage(Img)
+  {
+    set text(fill: luma(100))
+    set block(spacing: 0.1em)
+    text(size: 20pt)[#weapon.Name]
+    h(1fr)
+    weapon.Price
+    line(length: 100%, stroke: luma(100))
+  }
+  DescriptiveText
+  v(-1em)
+}
+
+#let dark_cell(body) = table.cell(fill: black, text(fill: white, body))
+#FCWeaponHeader((Name: "My Test Weapon", Price: "5þ"), lorem(40))
+#table(
+  columns: (3fr, 2fr, 1fr, 2fr, 1fr, 2fr, 1fr, 2fr, 2fr),
+  table.cell(colspan: 9)[Braced, blah blah],
+  [Ball], dark_cell[Hits], [1], dark_cell[Damage], [5], dark_cell[AP], [2], dark_cell[Range], [Extreme],
+  [Incendiary], dark_cell[Hits], [1], dark_cell[Damage], [5], dark_cell[AP], [1], dark_cell[Range], [Extreme],
+  table.cell(colspan: 9)[Incendiary. On a hit, lights aircraft on fire.],
+)
+
+
 
 #FCVehicleFancy(
   json("Sample Vehicle_stats.json"),
+
   Img: image("images/Wandelburg.jpg"),
   TextVOffset: 6.2in,
   BoxText: ("Role": "Fast Bomber", "First Flight": "1601", "Strengths": "Fastest Bomber"),
@@ -105,6 +149,15 @@
 ][#lorem(100)]
 
 #FCVehicleFancy(json("Sample Vehicle_stats.json"))[][#lorem(100)]
+#let vehicle_modification(name, price: none) = box(width: 100%)[
+  #set par(leading: -1em)
+  #set block(spacing: 0.1em)
+  #name; #h(1fr); #if (price != none) { [#price;þ] }
+
+  #line(length: 100%)
+];
+#vehicle_modification("Hello", price: 5)
+#vehicle_modification("Priceless")
 
 #let ship_stats = (
   Name: "Macchi Frigate",
@@ -174,6 +227,7 @@
     #v(1fr)
     #FCPSection("Character History")[Choose all that apply]
 
+    #v(1fr)
     I was taught to fly by...
     #columns(2, gutter: 0pt)[
       - ...an expensive training course.
@@ -183,6 +237,7 @@
       - ...nobody, I'm just winging it.
     ]
 
+    #v(1fr)
     I left my home because...
 
     #columns(3, gutter: 0pt)[
@@ -196,6 +251,7 @@
       - ...I broke the law.
     ]
 
+    #v(1fr)
     I fly so I can make some money and so I can...
 
     #columns(2, gutter: 0pt)[
@@ -290,11 +346,12 @@
 
     #FCPStatTable("Worn Down", "Just punching the clock.", (Hard: "+2", Keen: "+2", Calm: "+2", Daring: "-4"))
 
-    #FCPStatTable(
-      "Safety Inspector",
-      "No point taking extra risks.",
-      (Hard: "-2", Keen: "+2", Calm: "+4", Daring: "-2"),
-    )
+    #FCPStatTable("Safety Inspector", "No point taking extra risks.", (
+      Hard: "-2",
+      Keen: "+2",
+      Calm: "+4",
+      Daring: "-2",
+    ))
   ],
   //This is defining them so the circles show up right.  It does not check to make sure they're the same as the StatTables.
   StatNames: ("Hard", "Keen", "Calm", "Daring"),
@@ -435,6 +492,7 @@
     Pushes Weather Flak against attackers.],
 )
 
-#FCShortAirship(AirDestroyer)[The most common form of Air Destroyer in the war, forming the basis of the Gotha Empire's zeppelin fleet. A warlord
+#FCShortAirship(
+  AirDestroyer,
+)[The most common form of Air Destroyer in the war, forming the basis of the Gotha Empire's zeppelin fleet. A warlord
   repairing a downed Jörmungandr can threaten an entire region.]
-
