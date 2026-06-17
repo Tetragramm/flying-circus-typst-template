@@ -339,7 +339,7 @@
 
     line(length: 100%, stroke: luma(100))
 
-    [_\"#Nickname\"_ #h(1fr); #plane.Upkeep;þ]
+    [_\"#Nickname\"_ #h(1fr); #plane.Upkeep;þ Upkeep]
   }
 
   //Read through the stat rows and push them into cells

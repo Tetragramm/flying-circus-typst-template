@@ -1,5 +1,5 @@
 # The `flyingcircus` Package
-<div align="center">Version 4.0.0</div>
+<div align="center">Version 4.0.1</div>
 
 Do you want your homebrew to have the same fancy style as the Flying Circus book? Do you want a simple command to generate a whole aircraft stat page, vehicle, or even ship?  I'll bet you do! Take a look at the Flying Circus Aircraft Catalog Template. 
 

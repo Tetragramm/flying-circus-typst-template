@@ -1,3 +1,7 @@
+# (https://github.com/Tetragramm/flying-circus-typst-template/releases/tag/v4.0.1)
+## Fixed
+Missing text on Upkeep price.
+
 # (https://github.com/Tetragramm/flying-circus-typst-template/releases/tag/v4.0.0)
 ## Added
 Add webassembly implementation of the aircraft builder to handle turning links directly into json.  No more manual intervention (for aircraft, at least).
